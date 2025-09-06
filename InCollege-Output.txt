@@ -1,0 +1,4 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
