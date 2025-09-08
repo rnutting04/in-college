@@ -7,8 +7,7 @@ Welcome to InCollege!
 Log In
 Create New Account
 Enter your choice:
-Enter new username
-Username already exists. Please try again
+All permitted accounts have been created, please come back later
 Welcome to InCollege!
 Log In
 Create New Account
@@ -23,9 +22,22 @@ Welcome to InCollege!
 Log In
 Create New Account
 Enter your choice:
-Enter new username
-Enter new password
-Password must be 8-12 characters with at least one uppercase letter, one digit, and one special char
+Invalid choice. Please try again.
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+All permitted accounts have been created, please come back later
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+Invalid choice. Please try again.
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+Invalid choice. Please try again.
 Welcome to InCollege!
 Log In
 Create New Account
@@ -36,13 +48,34 @@ Incorrect username/password, please try again
 Please enter your username:
 Please enter your password:
 You have successfully logged in
-Inside Login menu
-Welcome to InCollege!
-Log In
-Create New Account
+Welcome, Adriana!
+Search for a job
+Find someone you know
+Learn a new skill
 Enter your choice:
-All permitted accounts have been created, please come back later
-Welcome to InCollege!
-Log In
-Create New Account
+Invalid choice. Please try again.
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
+Learn a New Skill:
+Write resume
+Mock interview tips
+Reccomended certifications
+Volunteer oportunities
+Data Analysis
+Go Back
+Enter your choice:
+This skill is under construction.
+Learn a New Skill:
+Write resume
+Mock interview tips
+Reccomended certifications
+Volunteer oportunities
+Data Analysis
+Go Back
+Enter your choice:
+Search for a job
+Find someone you know
+Learn a new skill
 Enter your choice:

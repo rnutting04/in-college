@@ -70,6 +70,10 @@
                88 Has-Special VALUE "Y".
            01 WS-Password-Length  PIC 9(3) VALUE 0.
 
+           *> Stores the current user name before displaying post-login screen
+           01 WS-Current-Username PIC X(20).
+
+
       PROCEDURE DIVISION.
            PERFORM MAIN.
 
@@ -188,6 +192,7 @@
                            MOVE "You have successfully logged in" TO WS-Line
                            PERFORM OUTPUT-LINE
                            MOVE "Y" TO WS-Logged-In
+                           MOVE Input-Username TO WS-Current-Username
                            PERFORM LOGGED-IN-MENU
                            EXIT PERFORM
                        END-IF
@@ -308,6 +313,84 @@
                CLOSE UsersFile.
 
            LOGGED-IN-MENU.
-               *> Placeholder for post-login menu
-               MOVE "Inside Login menu" TO WS-Line
-               PERFORM OUTPUT-LINE.
+               *> Clear WS-Line
+               MOVE SPACE TO WS-Line
+               STRING
+               "Welcome, " DELIMITED BY SIZE
+               WS-Current-Username DELIMITED BY SPACE
+               "!" DELIMITED BY SIZE
+               INTO WS-Line
+               END-STRING.
+               PERFORM OUTPUT-LINE
+
+               PERFORM UNTIL EOF-Input
+                   MOVE "Search for a job" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Find someone you know" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Learn a new skill" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Enter your choice:" TO WS-Line
+                   PERFORM OUTPUT-LINE
+
+                   PERFORM READ-INPUT
+
+                   EVALUATE InputRecord
+                       WHEN "Search for a job"
+                           MOVE "Job search/internship is under construction." TO WS-Line
+                           PERFORM OUTPUT-LINE
+
+                       WHEN "Find someone you know"
+                           MOVE "Find someone you know is under construction." TO WS-Line
+                           PERFORM OUTPUT-LINE
+
+                       WHEN "Learn a new skill"
+                           PERFORM LEARN-SKILL-MENU
+
+                       WHEN OTHER
+                           MOVE "Invalid choice. Please try again." TO WS-Line
+                           PERFORM OUTPUT-LINE
+                   END-EVALUATE
+               END-PERFORM.
+
+
+           LEARN-SKILL-MENU.
+
+               PERFORM UNTIL EOF-Input
+                   MOVE "Learn a New Skill:" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Write resume" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Mock interview tips" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Reccomended certifications" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Volunteer oportunities" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Data Analysis" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Go Back" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "Enter your choice:" TO WS-Line
+                   PERFORM OUTPUT-LINE
+
+                   PERFORM READ-INPUT
+
+                   EVALUATE InputRecord
+                       WHEN "Write resume" WHEN "Mock interview tips"
+                       WHEN "Reccomended certifications" WHEN "Volunteer oportunities"
+                       WHEN "Data Analysis"
+                           MOVE "This skill is under construction." TO WS-Line
+                           PERFORM OUTPUT-LINE
+
+                       WHEN "Go Back"
+                           EXIT PERFORM
+
+                       WHEN OTHER
+                           MOVE "Invalid choice. Please try again." TO WS-Line
+                           PERFORM OUTPUT-LINE
+                   END-EVALUATE
+               END-PERFORM.
+
+
+
