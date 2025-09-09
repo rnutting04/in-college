@@ -1,17 +1,19 @@
-Invalid Selection
 Create New Account
-Paul
-Adriana
-BadPassword
-Create New Account
-Adriana
-Beta502!
+bob
+Password1!
 Log In
-Henry
-PasswordDoesntMatter
-Adriana
-Beta502!
-Create New Account
+bob
+WrongPass
+wronguser
+Password1!
+bob
+Password1!
+Search for a job
+Find someone you know
 Learn a new skill
 Write resume
+Mock interview tips
+Reccomended certifications
+Volunteer oportunities
+Data Analysis
 Go Back
