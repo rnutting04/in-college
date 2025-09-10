@@ -1,6 +1,7 @@
 # In-College
 
-A COBOL-based program designed to simulate and manage an "In-College" system. It allows users to create accounts, log in, and perform various operations. The project can be run either directly through the COBOL compiler or using a containerized VS Code development environment.
+A COBOL-based program designed to simulate and manage an "In-College" system. It allows users to create accounts, log in, and perform various operations.  
+You can **run it locally**, **open it as a container in VS Code**, **or run it directly with Docker** as-is.
 
 ---
 
@@ -13,7 +14,7 @@ A COBOL-based program designed to simulate and manage an "In-College" system. It
 
 ---
 
-## Repository Structure (Tentative)
+## Repository Structure
 
 ```
 in-college/
@@ -34,7 +35,6 @@ in-college/
 ### Option 1 — Run Without VS Code (Local Execution)
 
 - **COBOL Compiler**: Install [GnuCOBOL](https://sourceforge.net/projects/gnucobol/) or another COBOL compiler.
-- **Docker** (optional): Only needed if you want to use containerized execution.
 
 **Install GnuCOBOL (Linux / WSL example):**
 
@@ -53,9 +53,34 @@ sudo apt install open-cobol
 
 ---
 
+### Option 3 — Run Directly in Docker (No VS Code Needed)
+
+This repository includes a `Dockerfile` so you can run the program as-is without installing COBOL locally.
+
+1. Build the Docker image:
+   ```bash
+   docker build -t in-college .
+   ```
+
+2. Run the container:
+   ```bash
+   docker run --rm -it in-college
+   ```
+
+3. If you want to mount local input/output files into the container:
+   ```bash
+   docker run --rm -it \
+     -v "$(pwd)/InCollege-Input.txt:/app/InCollege-Input.txt" \
+     -v "$(pwd)/InCollege-Output.txt:/app/InCollege-Output.txt" \
+     -v "$(pwd)/InCollege-Users.txt:/app/InCollege-Users.txt" \
+     in-college
+   ```
+
+---
+
 ## How to Run
 
-### **1. Running Locally (Without VS Code)**
+### **1. Running Locally (Without VS Code or Docker)**
 
 1. Navigate to the `src` folder:
    ```bash
@@ -72,16 +97,12 @@ sudo apt install open-cobol
    ./InCollege
    ```
 
-4. Modify `InCollege-Input.txt` to test specific inputs if desired. Outputs will be written to `InCollege-Output.txt`.
-
 ---
 
 ### **2. Running in VS Code DevContainer**
 
-This repository includes `.devcontainer` configuration to make development easier.
-
 1. Open the project in **VS Code**.
-2. When prompted, **Reopen in Container**.
+2. When prompted, **Reopen in Container**.  
    Alternatively, use:
    ```
    Ctrl + Shift + P → Remote-Containers: Reopen in Container
@@ -110,13 +131,11 @@ This repository includes `.devcontainer` configuration to make development easie
 
 ## Troubleshooting
 
-- **Permission Denied**
+- **Permission Denied**  
   Ensure your compiled binary is executable:
   ```bash
   chmod +x InCollege
   ```
 
-- **Docker Not Running**
+- **Docker Not Running**  
   Start Docker Desktop or your Docker daemon before using the VS Code devcontainer.
-
-
