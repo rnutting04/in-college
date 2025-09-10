@@ -234,6 +234,9 @@
 
                IF Unique-Username
                    *> Loop until a valid password is entered
+                   *> Reset per-account password state
+                   MOVE "N" TO WS-Password-Valid
+                   MOVE SPACES TO Input-Password
                    PERFORM UNTIL Password-Valid
                        MOVE "Enter new password" TO WS-Line
                        PERFORM OUTPUT-LINE
