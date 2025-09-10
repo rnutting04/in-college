@@ -363,9 +363,9 @@
                    PERFORM OUTPUT-LINE
                    MOVE "Mock interview tips" TO WS-Line
                    PERFORM OUTPUT-LINE
-                   MOVE "Reccomended certifications" TO WS-Line
+                   MOVE "Recommended certifications" TO WS-Line
                    PERFORM OUTPUT-LINE
-                   MOVE "Volunteer oportunities" TO WS-Line
+                   MOVE "Volunteer opportunities" TO WS-Line
                    PERFORM OUTPUT-LINE
                    MOVE "Data Analysis" TO WS-Line
                    PERFORM OUTPUT-LINE
@@ -378,7 +378,7 @@
 
                    EVALUATE InputRecord
                        WHEN "Write resume" WHEN "Mock interview tips"
-                       WHEN "Reccomended certifications" WHEN "Volunteer oportunities"
+                       WHEN "Recommended certifications" WHEN "Volunteer opportunities"
                        WHEN "Data Analysis"
                            MOVE "This skill is under construction." TO WS-Line
                            PERFORM OUTPUT-LINE
