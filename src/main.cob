@@ -1,100 +1,144 @@
-      IDENTIFICATION DIVISION.
-           PROGRAM-ID. InCollege.
-      ENVIRONMENT DIVISION.
-           INPUT-OUTPUT SECTION.
-               FILE-CONTROL.
-                   SELECT InputFile ASSIGN TO "InCollege-Input.txt"
-                       ORGANIZATION IS LINE SEQUENTIAL.
-                   SELECT OutputFile ASSIGN TO "InCollege-Output.txt"
-                       ORGANIZATION IS LINE SEQUENTIAL
-                       ACCESS IS SEQUENTIAL.
-                   *> Sequential file to store Users data
-                   SELECT UsersFile ASSIGN TO "InCollege-Users.txt"
-                       ORGANIZATION IS LINE SEQUENTIAL
-                       ACCESS IS SEQUENTIAL.
-      DATA DIVISION.
-           FILE SECTION.
-               FD  InputFile.
-               *>File description
-               01  InputRecord PIC X(100).
-               FD  OutputFile.
-               01  OutputRecord PIC X(100).
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. InCollege.
 
-               FD UsersFile.
-               01 UserRecord.
-                   *> Sub-records start with 05
-                   05 UR-Username PIC X(20).
-                   05 Space-In-Between PIC X VALUE SPACE.
-                   05 UR-Password PIC X(12).
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT InputFile ASSIGN TO "InCollege-Input.txt"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT OutputFile ASSIGN TO "InCollege-Output.txt"
+               ORGANIZATION IS LINE SEQUENTIAL
+               ACCESS IS SEQUENTIAL.
+           *> Sequential file to store Users data
+           SELECT UsersFile ASSIGN TO "InCollege-Users.txt"
+               ORGANIZATION IS LINE SEQUENTIAL
+               ACCESS IS SEQUENTIAL.
+           *> Sequential file to store Profiles data
+           SELECT ProfilesFile ASSIGN TO "InCollege-Profiles.txt"
+               ORGANIZATION IS LINE SEQUENTIAL
+               ACCESS IS SEQUENTIAL.
 
-           WORKING-STORAGE SECTION.
-           *> Flag variable initialized to N (havent reached the end of file)
-           01 WS-EOF-Flag PIC X VALUE "N".
-               88 EOF VALUE "Y".
+       DATA DIVISION.
+       FILE SECTION.
+       FD  InputFile.
+       01  InputRecord                 PIC X(100).
+       FD  OutputFile.
+       01  OutputRecord                PIC X(100).
 
-           *> Flag variable specifically for InputFile to avoid conflicts.
-           01 WS-EOF-Flag-Input PIC X VALUE "N".
-               88 EOF-Input VALUE "Y".
+       FD  UsersFile.
+       01  UserRecord.
+           05  UR-Username             PIC X(20).
+           05  Space-In-Between        PIC X VALUE SPACE.
+           05  UR-Password             PIC X(12).
 
-           01 WS-Number-Users PIC 9 VALUE 0.
+       FD  ProfilesFile.
+       01  ProfileRecord.
+           05 PR-Username              PIC X(20).
+           05 PR-FirstName             PIC X(20).
+           05 PR-LastName              PIC X(20).
+           05 PR-University            PIC X(40).
+           05 PR-Major                 PIC X(30).
+           05 PR-GradYear              PIC 9(4).
+           05 PR-About                 PIC X(200).
+           05 PR-Exp-Count             PIC 9.
+           05 PR-Exp OCCURS 3 TIMES.
+              10 PR-Exp-Title          PIC X(30).
+              10 PR-Exp-Company        PIC X(30).
+              10 PR-Exp-Dates          PIC X(30).
+              10 PR-Exp-Desc           PIC X(100).
+           05 PR-Edu-Count             PIC 9.
+           05 PR-Edu OCCURS 3 TIMES.
+              10 PR-Edu-Degree         PIC X(30).
+              10 PR-Edu-University     PIC X(40).
+              10 PR-Edu-Years          PIC X(15).
 
-           01 WS-User-Table.
-               05 WS-User OCCURS 5 TIMES.
-                   10 WS-Username PIC X(20).
-                   10 WS-Password PIC X(12).
+       WORKING-STORAGE SECTION.
+       01 WS-EOF-Flag                  PIC X VALUE "N".
+           88 EOF                      VALUE "Y".
+       01 WS-EOF-Flag-Input            PIC X VALUE "N".
+           88 EOF-Input                VALUE "Y".
 
-           01 WS-Line             PIC X(100).
+       01 WS-Number-Users              PIC 9 VALUE 0.
 
-           *> General-purpose counter for loops
-           01 COUNTER PIC 9(2) VALUE 0.
+       01 WS-User-Table.
+           05 WS-User OCCURS 5 TIMES.
+              10 WS-Username           PIC X(20).
+              10 WS-Password           PIC X(12).
 
-           *> Buffer for username input
-           01 Input-Username PIC X(20).
-           *> Buffer for password input
-           01 Input-Password PIC X(12).
-           *> Flag to indicate if a user is logged in
-           01 WS-Logged-In PIC X VALUE "N".
-               88 Logged-In VALUE "Y".
+       01 WS-Line                      PIC X(100).
+       01 COUNTER                      PIC 9(2) VALUE 0.
+       01 Input-Username               PIC X(20).
+       01 Input-Password               PIC X(12).
+       01 WS-Logged-In                 PIC X VALUE "N".
+           88 Logged-In                VALUE "Y".
+       01 Unique-Username-Flag         PIC X VALUE "Y".
+           88 Unique-Username          VALUE "Y".
+       01 WS-Char                      PIC X.
+       01 WS-Password-Valid            PIC X VALUE "N".
+           88 Password-Valid           VALUE "Y".
+       01 WS-Has-Upper                 PIC X VALUE "N".
+           88 Has-Upper                VALUE "Y".
+       01 WS-Has-Digit                 PIC X VALUE "N".
+           88 Has-Digit                VALUE "Y".
+       01 WS-Has-Special               PIC X VALUE "N".
+           88 Has-Special              VALUE "Y".
+       01 WS-Password-Length           PIC 9(3) VALUE 0.
+       01 WS-Current-Username          PIC X(20).
 
-           01 Unique-Username-Flag PIC X VALUE "Y".
-               88 Unique-Username VALUE "Y".
+       *> Profiles
+       01 WS-Number-Profiles           PIC 9 VALUE 0.
+       01 WS-Profile-Table.
+           05 WS-Profile OCCURS 5 TIMES.
+              10 PF-Username           PIC X(20).
+              10 PF-FirstName          PIC X(20).
+              10 PF-LastName           PIC X(20).
+              10 PF-University         PIC X(40).
+              10 PF-Major              PIC X(30).
+              10 PF-GradYear           PIC 9(4).
+              10 PF-About              PIC X(200).
+              10 PF-Exp-Count          PIC 9.
+              10 PF-Exp OCCURS 3 TIMES.
+                 15 PF-Exp-Title       PIC X(30).
+                 15 PF-Exp-Company     PIC X(30).
+                 15 PF-Exp-Dates       PIC X(30).
+                 15 PF-Exp-Desc        PIC X(100).
+              10 PF-Edu-Count          PIC 9.
+              10 PF-Edu OCCURS 3 TIMES.
+                 15 PF-Edu-Degree      PIC X(30).
+                 15 PF-Edu-University  PIC X(40).
+                 15 PF-Edu-Years       PIC X(15).
 
-           01 WS-Char             PIC X.
-           01 WS-Password-Valid   PIC X VALUE "N".
-               88 Password-Valid VALUE "Y".
-           01 WS-Has-Upper        PIC X VALUE "N".
-               88 Has-Upper VALUE "Y".
-           01 WS-Has-Digit        PIC X VALUE "N".
-               88 Has-Digit VALUE "Y".
-           01 WS-Has-Special      PIC X VALUE "N".
-               88 Has-Special VALUE "Y".
-           01 WS-Password-Length  PIC 9(3) VALUE 0.
+       01 WS-Found-Index               PIC 9 VALUE 0.
+       01 WS-Year-OK                   PIC X VALUE "N".
+           88 Year-OK                  VALUE "Y".
+       01 WS-ZeroLine                  PIC X(100) VALUE SPACES.
+       01 WS-Num-Edit                  PIC ZZ9.
+       01 WS-ANS                       PIC X VALUE SPACE.  *> Holds Y/N answers
 
-           *> Stores the current user name before displaying post-login screen
-           01 WS-Current-Username PIC X(20).
+       01 WS-INPUT-TRIM PIC X(100).
 
 
-      PROCEDURE DIVISION.
+       PROCEDURE DIVISION.
            PERFORM MAIN.
+           STOP RUN.
 
-           MAIN.
-               OPEN INPUT InputFile
-               OPEN OUTPUT OutputFile
+       MAIN.
+           OPEN INPUT  InputFile
+           OPEN OUTPUT OutputFile
 
-               *> Load existing users from the users file into memory
-               PERFORM LOAD-USERS
+           PERFORM LOAD-USERS
+           PERFORM LOAD-PROFILES
 
-               *> Continue running until end of input file
-               PERFORM UNTIL EOF-Input
-                   PERFORM MAIN-MENU
-               END-PERFORM
+           PERFORM UNTIL EOF-Input
+               PERFORM MAIN-MENU
+           END-PERFORM
 
-               *> Save any changes to the user table back to the users file
-               PERFORM SAVE-USERS
+           PERFORM SAVE-USERS
+           PERFORM SAVE-PROFILES
 
-               CLOSE InputFile
-               CLOSE OutputFile
-               STOP RUN.
+           CLOSE InputFile
+           CLOSE OutputFile
+           GOBACK.
 
            LOAD-USERS.
                OPEN INPUT UsersFile
@@ -110,6 +154,69 @@
                    END-READ
                END-PERFORM
                CLOSE UsersFile.
+
+       SAVE-USERS.
+               OPEN OUTPUT UsersFile
+               *> Loop through all users in the user table
+               PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Number-Users
+                   *> Copy username and password from table to record fields
+                   MOVE WS-Username(COUNTER) TO UR-Username
+                   MOVE WS-Password(COUNTER) TO UR-Password
+                   *> Write the user record to the file
+                   WRITE UserRecord
+               END-PERFORM
+               CLOSE UsersFile.
+
+       LOAD-PROFILES.
+           OPEN INPUT ProfilesFile
+           MOVE 0 TO WS-Number-Profiles
+           MOVE "N" TO WS-EOF-Flag
+           PERFORM UNTIL WS-Number-Profiles = 5 OR EOF
+               READ ProfilesFile INTO ProfileRecord
+                   AT END SET EOF TO TRUE
+                   NOT AT END
+                       ADD 1 TO WS-Number-Profiles
+                       MOVE PR-Username    TO PF-Username(WS-Number-Profiles)
+                       MOVE PR-FirstName   TO PF-FirstName(WS-Number-Profiles)
+                       MOVE PR-LastName    TO PF-LastName(WS-Number-Profiles)
+                       MOVE PR-University  TO PF-University(WS-Number-Profiles)
+                       MOVE PR-Major       TO PF-Major(WS-Number-Profiles)
+                       MOVE PR-GradYear    TO PF-GradYear(WS-Number-Profiles)
+                       MOVE PR-About       TO PF-About(WS-Number-Profiles)
+                       MOVE PR-Exp-Count   TO PF-Exp-Count(WS-Number-Profiles)
+                       MOVE PR-Edu-Count   TO PF-Edu-Count(WS-Number-Profiles)
+                       MOVE PR-Exp(1)      TO PF-Exp(WS-Number-Profiles,1)
+                       MOVE PR-Exp(2)      TO PF-Exp(WS-Number-Profiles,2)
+                       MOVE PR-Exp(3)      TO PF-Exp(WS-Number-Profiles,3)
+                       MOVE PR-Edu(1)      TO PF-Edu(WS-Number-Profiles,1)
+                       MOVE PR-Edu(2)      TO PF-Edu(WS-Number-Profiles,2)
+                       MOVE PR-Edu(3)      TO PF-Edu(WS-Number-Profiles,3)
+               END-READ
+           END-PERFORM
+           CLOSE ProfilesFile
+           MOVE "N" TO WS-EOF-Flag.
+
+       SAVE-PROFILES.
+           OPEN OUTPUT ProfilesFile
+           PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Number-Profiles
+               MOVE PF-Username(COUNTER)    TO PR-Username
+               MOVE PF-FirstName(COUNTER)   TO PR-FirstName
+               MOVE PF-LastName(COUNTER)    TO PR-LastName
+               MOVE PF-University(COUNTER)  TO PR-University
+               MOVE PF-Major(COUNTER)       TO PR-Major
+               MOVE PF-GradYear(COUNTER)    TO PR-GradYear
+               MOVE PF-About(COUNTER)       TO PR-About
+               MOVE PF-Exp-Count(COUNTER)   TO PR-Exp-Count
+               MOVE PF-Edu-Count(COUNTER)   TO PR-Edu-Count
+               MOVE PF-Exp(COUNTER,1)       TO PR-Exp(1)
+               MOVE PF-Exp(COUNTER,2)       TO PR-Exp(2)
+               MOVE PF-Exp(COUNTER,3)       TO PR-Exp(3)
+               MOVE PF-Edu(COUNTER,1)       TO PR-Edu(1)
+               MOVE PF-Edu(COUNTER,2)       TO PR-Edu(2)
+               MOVE PF-Edu(COUNTER,3)       TO PR-Edu(3)
+               WRITE ProfileRecord
+           END-PERFORM
+           CLOSE ProfilesFile.
 
            MAIN-MENU.
                PERFORM UNTIL EOF-Input
@@ -147,11 +254,10 @@
                    WHEN InputRecord = "Create New Account"
                        PERFORM CREATE-ACCOUNT
                 END-EVALUATE.
-
-           OUTPUT-LINE.
-               MOVE WS-Line TO OutputRecord
-               DISPLAY WS-Line
-               WRITE OutputRecord.
+       OUTPUT-LINE.
+           MOVE WS-Line TO OutputRecord
+           DISPLAY WS-Line
+           WRITE OutputRecord.
 
            READ-INPUT.
                 *> Attempt to read the next line from InputFile into InputRecord
@@ -160,6 +266,7 @@
                        *> If end of file is reached, set EOF flag and save users
                        SET EOF-Input TO TRUE
                        PERFORM SAVE-USERS
+                       PERFORM SAVE-PROFILES
                        CLOSE InputFile
                        CLOSE OutputFile
                        STOP RUN
@@ -206,8 +313,6 @@
                        PERFORM OUTPUT-LINE
                    END-IF
                 END-PERFORM.
-
-                *>PERFORM POST-LOGIN-MENU
 
            CREATE-ACCOUNT.
                MOVE "Enter new username" TO WS-Line
@@ -303,97 +408,438 @@
                    MOVE "Y" TO WS-Password-Valid
                END-IF.
 
-           SAVE-USERS.
-               OPEN OUTPUT UsersFile
-               *> Loop through all users in the user table
-               PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Number-Users
-                   *> Copy username and password from table to record fields
-                   MOVE WS-Username(COUNTER) TO UR-Username
-                   MOVE WS-Password(COUNTER) TO UR-Password
-                   *> Write the user record to the file
-                   WRITE UserRecord
-               END-PERFORM
-               CLOSE UsersFile.
+       LOGGED-IN-MENU.
+           MOVE WS-ZeroLine TO WS-Line
+           STRING
+               "Welcome, "               DELIMITED BY SIZE
+               WS-Current-Username       DELIMITED BY SIZE
+               "!"                       DELIMITED BY SIZE
+            INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
 
-           LOGGED-IN-MENU.
-               *> Clear WS-Line
-               MOVE SPACE TO WS-Line
-               STRING
-               "Welcome, " DELIMITED BY SIZE
-               WS-Current-Username DELIMITED BY SPACE
-               "!" DELIMITED BY SIZE
-               INTO WS-Line
-               END-STRING.
+           PERFORM UNTIL EOF-Input
+               MOVE "Create/Edit My Profile" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "View My Profile" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Search for a job" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Find someone you know" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Learn a new skill" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Enter your choice:" TO WS-Line
                PERFORM OUTPUT-LINE
 
-               PERFORM UNTIL EOF-Input
-                   MOVE "Search for a job" TO WS-Line
+               PERFORM READ-INPUT
+
+               EVALUATE InputRecord
+                   WHEN "Create/Edit My Profile"
+                       PERFORM CREATE-OR-EDIT-PROFILE
+                   WHEN "View My Profile"
+                       PERFORM VIEW-MY-PROFILE
+                   WHEN "Search for a job"
+                       MOVE "Job search/internship is under construction." TO WS-Line
+                       PERFORM OUTPUT-LINE
+                   WHEN "Find someone you know"
+                       MOVE "Find someone you know is under construction." TO WS-Line
+                       PERFORM OUTPUT-LINE
+                   WHEN "Learn a new skill"
+                       PERFORM LEARN-SKILL-MENU
+                   WHEN OTHER
+                       MOVE "Invalid choice. Please try again." TO WS-Line
+                       PERFORM OUTPUT-LINE
+               END-EVALUATE
+           END-PERFORM.
+
+       FIND-PROFILE-INDEX.
+           MOVE 0 TO WS-Found-Index
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Profiles
+               IF WS-Current-Username = PF-Username(COUNTER)
+                   MOVE COUNTER TO WS-Found-Index
+                   EXIT PERFORM
+               END-IF
+               ADD 1 TO COUNTER
+           END-PERFORM.
+       CREATE-OR-EDIT-PROFILE.
+           PERFORM FIND-PROFILE-INDEX
+           IF WS-Found-Index = 0
+               IF WS-Number-Profiles < 5
+                   ADD 1 TO WS-Number-Profiles
+                   MOVE WS-Number-Profiles TO WS-Found-Index
+                   MOVE WS-Current-Username TO PF-Username(WS-Found-Index)
+               ELSE
+                   MOVE "Profile storage limit reached. Cannot create new profile." TO WS-Line
                    PERFORM OUTPUT-LINE
-                   MOVE "Find someone you know" TO WS-Line
+                   EXIT PARAGRAPH
+               END-IF
+           END-IF
+
+           MOVE " --- Create/Edit Profile --- " TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           *> -------- First Name (X(20)) --------
+           MOVE "Enter First Name:" TO WS-Line
+           PERFORM OUTPUT-LINE
+           PERFORM READ-INPUT
+           MOVE InputRecord TO WS-INPUT-TRIM
+           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+           MOVE SPACES TO PF-FirstName(WS-Found-Index)
+           MOVE WS-INPUT-TRIM(1:20) TO PF-FirstName(WS-Found-Index)
+
+           *> -------- Last Name (X(20)) --------
+           MOVE "Enter Last Name:" TO WS-Line
+           PERFORM OUTPUT-LINE
+           PERFORM READ-INPUT
+           MOVE InputRecord TO WS-INPUT-TRIM
+           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+           MOVE SPACES TO PF-LastName(WS-Found-Index)
+           MOVE WS-INPUT-TRIM(1:20) TO PF-LastName(WS-Found-Index)
+
+           *> -------- University (X(40)) --------
+           MOVE "Enter University/College Attended:" TO WS-Line
+           PERFORM OUTPUT-LINE
+           PERFORM READ-INPUT
+           MOVE InputRecord TO WS-INPUT-TRIM
+           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+           MOVE SPACES TO PF-University(WS-Found-Index)
+           MOVE WS-INPUT-TRIM(1:40) TO PF-University(WS-Found-Index)
+
+           *> -------- Major (X(30)) --------
+           MOVE "Enter Major:" TO WS-Line
+           PERFORM OUTPUT-LINE
+           PERFORM READ-INPUT
+           MOVE InputRecord TO WS-INPUT-TRIM
+           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+           MOVE SPACES TO PF-Major(WS-Found-Index)
+           MOVE WS-INPUT-TRIM(1:30) TO PF-Major(WS-Found-Index)
+
+           *> -------- Graduation Year (9(4)) --------
+           MOVE "Enter Graduation Year (YYYY):" TO WS-Line
+           PERFORM OUTPUT-LINE
+           MOVE "N" TO WS-Year-OK
+           PERFORM UNTIL Year-OK
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM(1:4) NUMERIC
+                  AND WS-INPUT-TRIM(5:1) = SPACE
+                  AND FUNCTION NUMVAL(WS-INPUT-TRIM(1:4)) >= 1900
+                  AND FUNCTION NUMVAL(WS-INPUT-TRIM(1:4)) <= 2099
+                   MOVE "Y" TO WS-Year-OK
+                   MOVE WS-INPUT-TRIM(1:4) TO PF-GradYear(WS-Found-Index)
+               ELSE
+                   MOVE "Invalid year. Enter a 4-digit year between 1900 and 2099:" TO WS-Line
                    PERFORM OUTPUT-LINE
-                   MOVE "Learn a new skill" TO WS-Line
+               END-IF
+           END-PERFORM
+
+           *> -------- About Me (X(200); input is 100 chars max) --------
+           MOVE "Enter About Me (optional, max 200 chars, blank to skip):" TO WS-Line
+           PERFORM OUTPUT-LINE
+           PERFORM READ-INPUT
+           MOVE InputRecord TO WS-INPUT-TRIM
+           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+           IF WS-INPUT-TRIM = SPACES
+               MOVE SPACES TO PF-About(WS-Found-Index)
+           ELSE
+               MOVE SPACES TO PF-About(WS-Found-Index)
+               MOVE WS-INPUT-TRIM(1:100) TO PF-About(WS-Found-Index)
+           END-IF
+
+           *> ================= EXPERIENCES with Y/N =================
+           MOVE 0 TO PF-Exp-Count(WS-Found-Index)
+           PERFORM UNTIL PF-Exp-Count(WS-Found-Index) >= 3
+               MOVE "Add an experience? (Y/N)" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord(1:1) TO WS-ANS
+               IF WS-ANS NOT = "Y"
+                   EXIT PERFORM
+               END-IF
+
+               ADD 1 TO PF-Exp-Count(WS-Found-Index)
+               MOVE PF-Exp-Count(WS-Found-Index) TO WS-Num-Edit
+
+               *> Title (X(30))
+               STRING "Experience #" DELIMITED BY SIZE
+                      WS-Num-Edit    DELIMITED BY SIZE
+                      " - Title:"    DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               MOVE SPACES TO PF-Exp-Title(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+               MOVE WS-INPUT-TRIM(1:30)
+                    TO PF-Exp-Title(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+
+               *> Company (X(30))
+               STRING "Experience #"              DELIMITED BY SIZE
+                      WS-Num-Edit                 DELIMITED BY SIZE
+                      " - Company/Organization:"  DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               MOVE SPACES TO PF-Exp-Company(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+               MOVE WS-INPUT-TRIM(1:30)
+                    TO PF-Exp-Company(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+
+               *> Dates (X(30))
+               STRING "Experience #" DELIMITED BY SIZE
+                      WS-Num-Edit    DELIMITED BY SIZE
+                      " - Dates (e.g., Summer 2025):" DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               MOVE SPACES TO PF-Exp-Dates(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+               MOVE WS-INPUT-TRIM(1:30)
+                    TO PF-Exp-Dates(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+
+               *> Description (X(100), optional)
+               STRING "Experience #" DELIMITED BY SIZE
+                      WS-Num-Edit    DELIMITED BY SIZE
+                      " - Description (optional, max 100 chars, blank to skip):" DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE SPACES TO PF-Exp-Desc(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+               ELSE
+                   MOVE SPACES TO PF-Exp-Desc(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                   MOVE WS-INPUT-TRIM(1:100)
+                        TO PF-Exp-Desc(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+               END-IF
+           END-PERFORM
+
+           *> ================= EDUCATION with Y/N =================
+           MOVE 0 TO PF-Edu-Count(WS-Found-Index)
+           PERFORM UNTIL PF-Edu-Count(WS-Found-Index) >= 3
+               MOVE "Add an education entry? (Y/N)" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord(1:1) TO WS-ANS
+               IF WS-ANS NOT = "Y"
+                   EXIT PERFORM
+               END-IF
+
+               ADD 1 TO PF-Edu-Count(WS-Found-Index)
+               MOVE PF-Edu-Count(WS-Found-Index) TO WS-Num-Edit
+
+               *> Degree (X(30))
+               STRING "Education #" DELIMITED BY SIZE
+                      WS-Num-Edit   DELIMITED BY SIZE
+                      " - Degree:"  DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               MOVE SPACES TO PF-Edu-Degree(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+               MOVE WS-INPUT-TRIM(1:30)
+                    TO PF-Edu-Degree(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+
+               *> University (X(40))
+               STRING "Education #"     DELIMITED BY SIZE
+                      WS-Num-Edit       DELIMITED BY SIZE
+                      " - University:"  DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               MOVE SPACES TO PF-Edu-University(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+               MOVE WS-INPUT-TRIM(1:40)
+                    TO PF-Edu-University(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+
+               *> Years (X(15))
+               STRING "Education #" DELIMITED BY SIZE
+                      WS-Num-Edit    DELIMITED BY SIZE
+                      " - Years (e.g., 2022-2026):" DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               MOVE SPACES TO PF-Edu-Years(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+               MOVE WS-INPUT-TRIM(1:15)
+                    TO PF-Edu-Years(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+           END-PERFORM
+
+           MOVE "Profile saved successfully!" TO WS-Line
+           PERFORM OUTPUT-LINE.
+
+
+       VIEW-MY-PROFILE.
+           PERFORM FIND-PROFILE-INDEX
+           IF WS-Found-Index = 0
+               MOVE "No profile found. Use 'Create/Edit My Profile' first." TO WS-Line
+               PERFORM OUTPUT-LINE
+               EXIT PARAGRAPH
+           END-IF
+
+           MOVE " --- Your Profile --- " TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Name: " DELIMITED BY SIZE
+                  PF-FirstName(WS-Found-Index) DELIMITED BY SIZE
+                  " " DELIMITED BY SIZE
+                  PF-LastName(WS-Found-Index)  DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "University: " DELIMITED BY SIZE
+                  PF-University(WS-Found-Index) DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Major: " DELIMITED BY SIZE
+                  PF-Major(WS-Found-Index) DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Graduation Year: " DELIMITED BY SIZE
+                  PF-GradYear(WS-Found-Index) DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           IF PF-About(WS-Found-Index) NOT = SPACES
+               MOVE SPACES TO WS-Line
+               STRING "About Me: " DELIMITED BY SIZE
+                      PF-About(WS-Found-Index) DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+           END-IF
+
+           MOVE "Experience:" TO WS-Line
+           PERFORM OUTPUT-LINE
+           IF PF-Exp-Count(WS-Found-Index) = 0
+               MOVE "  (none)" TO WS-Line
+               PERFORM OUTPUT-LINE
+           ELSE
+               PERFORM VARYING COUNTER FROM 1 BY 1
+                       UNTIL COUNTER > PF-Exp-Count(WS-Found-Index)
+                   MOVE SPACES TO WS-Line
+                   STRING "  Title: " DELIMITED BY SIZE
+                          PF-Exp-Title(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
                    PERFORM OUTPUT-LINE
-                   MOVE "Enter your choice:" TO WS-Line
+
+                   MOVE SPACES TO WS-Line
+                   STRING "  Company: " DELIMITED BY SIZE
+                          PF-Exp-Company(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
                    PERFORM OUTPUT-LINE
 
-                   PERFORM READ-INPUT
-
-                   EVALUATE InputRecord
-                       WHEN "Search for a job"
-                           MOVE "Job search/internship is under construction." TO WS-Line
-                           PERFORM OUTPUT-LINE
-
-                       WHEN "Find someone you know"
-                           MOVE "Find someone you know is under construction." TO WS-Line
-                           PERFORM OUTPUT-LINE
-
-                       WHEN "Learn a new skill"
-                           PERFORM LEARN-SKILL-MENU
-
-                       WHEN OTHER
-                           MOVE "Invalid choice. Please try again." TO WS-Line
-                           PERFORM OUTPUT-LINE
-                   END-EVALUATE
-               END-PERFORM.
-
-
-           LEARN-SKILL-MENU.
-
-               PERFORM UNTIL EOF-Input
-                   MOVE "Learn a New Skill:" TO WS-Line
-                   PERFORM OUTPUT-LINE
-                   MOVE "Write resume" TO WS-Line
-                   PERFORM OUTPUT-LINE
-                   MOVE "Mock interview tips" TO WS-Line
-                   PERFORM OUTPUT-LINE
-                   MOVE "Recommended certifications" TO WS-Line
-                   PERFORM OUTPUT-LINE
-                   MOVE "Volunteer opportunities" TO WS-Line
-                   PERFORM OUTPUT-LINE
-                   MOVE "Data Analysis" TO WS-Line
-                   PERFORM OUTPUT-LINE
-                   MOVE "Go Back" TO WS-Line
-                   PERFORM OUTPUT-LINE
-                   MOVE "Enter your choice:" TO WS-Line
+                   MOVE SPACES TO WS-Line
+                   STRING "  Dates: " DELIMITED BY SIZE
+                          PF-Exp-Dates(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
                    PERFORM OUTPUT-LINE
 
-                   PERFORM READ-INPUT
+                   IF PF-Exp-Desc(WS-Found-Index, COUNTER) NOT = SPACES
+                       MOVE SPACES TO WS-Line
+                       STRING "  Description: " DELIMITED BY SIZE
+                              PF-Exp-Desc(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                         INTO WS-Line
+                       END-STRING
+                       PERFORM OUTPUT-LINE
+                   END-IF
+               END-PERFORM
+           END-IF
 
-                   EVALUATE InputRecord
-                       WHEN "Write resume" WHEN "Mock interview tips"
-                       WHEN "Recommended certifications" WHEN "Volunteer opportunities"
-                       WHEN "Data Analysis"
-                           MOVE "This skill is under construction." TO WS-Line
-                           PERFORM OUTPUT-LINE
+           MOVE "Education:" TO WS-Line
+           PERFORM OUTPUT-LINE
+           IF PF-Edu-Count(WS-Found-Index) = 0
+               MOVE "  (none)" TO WS-Line
+               PERFORM OUTPUT-LINE
+           ELSE
+               PERFORM VARYING COUNTER FROM 1 BY 1
+                       UNTIL COUNTER > PF-Edu-Count(WS-Found-Index)
+                   MOVE SPACES TO WS-Line
+                   STRING "  Degree: " DELIMITED BY SIZE
+                          PF-Edu-Degree(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
 
-                       WHEN "Go Back"
-                           EXIT PERFORM
+                   MOVE SPACES TO WS-Line
+                   STRING "  University: " DELIMITED BY SIZE
+                          PF-Edu-University(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
 
-                       WHEN OTHER
-                           MOVE "Invalid choice. Please try again." TO WS-Line
-                           PERFORM OUTPUT-LINE
-                   END-EVALUATE
-               END-PERFORM.
+                   MOVE SPACES TO WS-Line
+                   STRING "  Years: " DELIMITED BY SIZE
+                          PF-Edu-Years(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+               END-PERFORM
+           END-IF
 
+           MOVE "--------------------" TO WS-Line
+           PERFORM OUTPUT-LINE.
 
+       LEARN-SKILL-MENU.
+           PERFORM UNTIL EOF-Input
+               MOVE "Learn a New Skill:" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Write resume" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Mock interview tips" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Recommended certifications" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Volunteer opportunities" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Data Analysis" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Go Back" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Enter your choice:" TO WS-Line
+               PERFORM OUTPUT-LINE
 
+               PERFORM READ-INPUT
+
+               EVALUATE InputRecord
+                   WHEN "Write resume" WHEN "Mock interview tips"
+                   WHEN "Recommended certifications" WHEN "Volunteer opportunities"
+                   WHEN "Data Analysis"
+                       MOVE "This skill is under construction." TO WS-Line
+                       PERFORM OUTPUT-LINE
+                   WHEN "Go Back"
+                       EXIT PERFORM
+                   WHEN OTHER
+                       MOVE "Invalid choice. Please try again." TO WS-Line
+                       PERFORM OUTPUT-LINE
+               END-EVALUATE
+           END-PERFORM.
