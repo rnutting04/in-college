@@ -412,7 +412,7 @@
            MOVE WS-ZeroLine TO WS-Line
            STRING
                "Welcome, "               DELIMITED BY SIZE
-               WS-Current-Username       DELIMITED BY SIZE
+               WS-Current-Username       DELIMITED BY SPACE
                "!"                       DELIMITED BY SIZE
             INTO WS-Line
            END-STRING
@@ -698,7 +698,7 @@
 
            MOVE SPACES TO WS-Line
            STRING "Name: " DELIMITED BY SIZE
-                  PF-FirstName(WS-Found-Index) DELIMITED BY SIZE
+                  PF-FirstName(WS-Found-Index) DELIMITED BY SPACE
                   " " DELIMITED BY SIZE
                   PF-LastName(WS-Found-Index)  DELIMITED BY SIZE
              INTO WS-Line
