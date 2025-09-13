@@ -480,39 +480,67 @@
            MOVE " --- Create/Edit Profile --- " TO WS-Line
            PERFORM OUTPUT-LINE
 
-           *> -------- First Name (X(20)) --------
-           MOVE "Enter First Name:" TO WS-Line
-           PERFORM OUTPUT-LINE
-           PERFORM READ-INPUT
-           MOVE InputRecord TO WS-INPUT-TRIM
-           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+           *> -------- First Name (X(20)) [REQUIRED] --------
+           MOVE SPACES TO WS-INPUT-TRIM
+           PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+               MOVE "Enter First Name:" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE "First Name is required. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
            MOVE SPACES TO PF-FirstName(WS-Found-Index)
            MOVE WS-INPUT-TRIM(1:20) TO PF-FirstName(WS-Found-Index)
 
-           *> -------- Last Name (X(20)) --------
-           MOVE "Enter Last Name:" TO WS-Line
-           PERFORM OUTPUT-LINE
-           PERFORM READ-INPUT
-           MOVE InputRecord TO WS-INPUT-TRIM
-           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+           *> -------- Last Name (X(20)) [REQUIRED] --------
+           MOVE SPACES TO WS-INPUT-TRIM
+           PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+               MOVE "Enter Last Name:" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE "Last Name is required. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
            MOVE SPACES TO PF-LastName(WS-Found-Index)
            MOVE WS-INPUT-TRIM(1:20) TO PF-LastName(WS-Found-Index)
 
-           *> -------- University (X(40)) --------
-           MOVE "Enter University/College Attended:" TO WS-Line
-           PERFORM OUTPUT-LINE
-           PERFORM READ-INPUT
-           MOVE InputRecord TO WS-INPUT-TRIM
-           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+           *> -------- University (X(40)) [REQUIRED] --------
+           MOVE SPACES TO WS-INPUT-TRIM
+           PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+               MOVE "Enter University/College Attended:" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE "University is required. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
            MOVE SPACES TO PF-University(WS-Found-Index)
            MOVE WS-INPUT-TRIM(1:40) TO PF-University(WS-Found-Index)
 
-           *> -------- Major (X(30)) --------
-           MOVE "Enter Major:" TO WS-Line
-           PERFORM OUTPUT-LINE
-           PERFORM READ-INPUT
-           MOVE InputRecord TO WS-INPUT-TRIM
-           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+           *> -------- Major (X(30)) [REQUIRED] --------
+           MOVE SPACES TO WS-INPUT-TRIM
+           PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+               MOVE "Enter Major:" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE "Major is required. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
            MOVE SPACES TO PF-Major(WS-Found-Index)
            MOVE WS-INPUT-TRIM(1:30) TO PF-Major(WS-Found-Index)
 
