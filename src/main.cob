@@ -377,7 +377,7 @@
 
                *> Calculate the length of the password
                *> (Don't count the spaces that are automatically added for padding)
-               PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > 12
+               PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > 13
                    IF Input-Password(COUNTER:1) NOT = SPACE
                        ADD 1 TO WS-Password-Length
                    END-IF
