@@ -28,7 +28,6 @@
        FD  UsersFile.
        01  UserRecord.
            05  UR-Username             PIC X(20).
-           05  Space-In-Between        PIC X VALUE SPACE.
            05  UR-Password             PIC X(12).
 
        FD  ProfilesFile.
