@@ -1,0 +1,38 @@
+Log In
+alice123
+Passw0rd!
+Create/Edit My Profile
+Alice
+Patrick
+Harvard
+Mechanical Engineering
+2024
+Keen on racing cars
+Y
+Intern
+Tech Inc.
+Spring 2024
+Helped to build robots.
+Y
+Part-Time job
+Tesla Motors
+Fall 2025
+Built AI robots from scratch.
+Y
+Full-Time job
+NASA
+Summer 2025
+Built rocketships to get them ready to launch to Mars
+Y
+AA degree
+USF
+2021-2022
+Y
+Bachelor's
+Harvard
+2023-2024
+Y
+Master's
+Oxford
+2025
+View My Profile
