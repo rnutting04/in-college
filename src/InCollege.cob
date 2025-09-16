@@ -576,137 +576,200 @@
                MOVE WS-INPUT-TRIM(1:100) TO PF-About(WS-Found-Index)
            END-IF
 
-           *> ================= EXPERIENCES with Y/N =================
+           *> ================= EXPERIENCES with strict Y/N and required fields =================
            MOVE 0 TO PF-Exp-Count(WS-Found-Index)
            PERFORM UNTIL PF-Exp-Count(WS-Found-Index) >= 3
                MOVE "Add an experience? (Y/N)" TO WS-Line
                PERFORM OUTPUT-LINE
                PERFORM READ-INPUT
                MOVE InputRecord(1:1) TO WS-ANS
-               IF WS-ANS NOT = "Y"
-                   EXIT PERFORM
-               END-IF
+               IF WS-ANS = "y" MOVE "Y" TO WS-ANS END-IF
+               IF WS-ANS = "n" MOVE "N" TO WS-ANS END-IF
 
-               ADD 1 TO PF-Exp-Count(WS-Found-Index)
-               MOVE PF-Exp-Count(WS-Found-Index) TO WS-Num-Edit
+               EVALUATE WS-ANS
+                   WHEN "N"
+                       EXIT PERFORM
 
-               *> Title (X(30))
-               STRING "Experience #" DELIMITED BY SIZE
-                      WS-Num-Edit    DELIMITED BY SIZE
-                      " - Title:"    DELIMITED BY SIZE
-                 INTO WS-Line
-               END-STRING
-               PERFORM OUTPUT-LINE
-               PERFORM READ-INPUT
-               MOVE InputRecord TO WS-INPUT-TRIM
-               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
-               MOVE SPACES TO PF-Exp-Title(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
-               MOVE WS-INPUT-TRIM(1:30)
-                    TO PF-Exp-Title(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                   WHEN "Y"
+                       ADD 1 TO PF-Exp-Count(WS-Found-Index)
+                       MOVE PF-Exp-Count(WS-Found-Index) TO WS-Num-Edit
 
-               *> Company (X(30))
-               STRING "Experience #"              DELIMITED BY SIZE
-                      WS-Num-Edit                 DELIMITED BY SIZE
-                      " - Company/Organization:"  DELIMITED BY SIZE
-                 INTO WS-Line
-               END-STRING
-               PERFORM OUTPUT-LINE
-               PERFORM READ-INPUT
-               MOVE InputRecord TO WS-INPUT-TRIM
-               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
-               MOVE SPACES TO PF-Exp-Company(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
-               MOVE WS-INPUT-TRIM(1:30)
-                    TO PF-Exp-Company(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                       *> -------- Title (X(30)) [REQUIRED]
+                       MOVE SPACES TO WS-INPUT-TRIM
+                       PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+                           STRING "Experience #" DELIMITED BY SIZE
+                                  WS-Num-Edit    DELIMITED BY SIZE
+                                  " - Title:"    DELIMITED BY SIZE
+                             INTO WS-Line
+                           END-STRING
+                           PERFORM OUTPUT-LINE
+                           PERFORM READ-INPUT
+                           MOVE InputRecord TO WS-INPUT-TRIM
+                           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+                           IF WS-INPUT-TRIM = SPACES
+                               MOVE "Title is required. Please try again." TO WS-Line
+                               PERFORM OUTPUT-LINE
+                           END-IF
+                       END-PERFORM
+                       MOVE SPACES TO PF-Exp-Title(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                       MOVE WS-INPUT-TRIM(1:30)
+                            TO PF-Exp-Title(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
 
-               *> Dates (X(30))
-               STRING "Experience #" DELIMITED BY SIZE
-                      WS-Num-Edit    DELIMITED BY SIZE
-                      " - Dates (e.g., Summer 2025):" DELIMITED BY SIZE
-                 INTO WS-Line
-               END-STRING
-               PERFORM OUTPUT-LINE
-               PERFORM READ-INPUT
-               MOVE InputRecord TO WS-INPUT-TRIM
-               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
-               MOVE SPACES TO PF-Exp-Dates(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
-               MOVE WS-INPUT-TRIM(1:30)
-                    TO PF-Exp-Dates(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                       *> -------- Company (X(30)) [REQUIRED]
+                       MOVE SPACES TO WS-INPUT-TRIM
+                       PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+                           STRING "Experience #"              DELIMITED BY SIZE
+                                  WS-Num-Edit                 DELIMITED BY SIZE
+                                  " - Company/Organization:"  DELIMITED BY SIZE
+                             INTO WS-Line
+                           END-STRING
+                           PERFORM OUTPUT-LINE
+                           PERFORM READ-INPUT
+                           MOVE InputRecord TO WS-INPUT-TRIM
+                           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+                           IF WS-INPUT-TRIM = SPACES
+                               MOVE "Company/Organization is required. Please try again." TO WS-Line
+                               PERFORM OUTPUT-LINE
+                           END-IF
+                       END-PERFORM
+                       MOVE SPACES TO PF-Exp-Company(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                       MOVE WS-INPUT-TRIM(1:30)
+                            TO PF-Exp-Company(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
 
-               *> Description (X(100), optional)
-               STRING "Experience #" DELIMITED BY SIZE
-                      WS-Num-Edit    DELIMITED BY SIZE
-                      " - Description (optional, max 100 chars, blank to skip):" DELIMITED BY SIZE
-                 INTO WS-Line
-               END-STRING
-               PERFORM OUTPUT-LINE
-               PERFORM READ-INPUT
-               MOVE InputRecord TO WS-INPUT-TRIM
-               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
-               IF WS-INPUT-TRIM = SPACES
-                   MOVE SPACES TO PF-Exp-Desc(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
-               ELSE
-                   MOVE SPACES TO PF-Exp-Desc(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
-                   MOVE WS-INPUT-TRIM(1:100)
-                        TO PF-Exp-Desc(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
-               END-IF
+                       *> -------- Dates (X(30)) [REQUIRED]
+                       MOVE SPACES TO WS-INPUT-TRIM
+                       PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+                           STRING "Experience #" DELIMITED BY SIZE
+                                  WS-Num-Edit    DELIMITED BY SIZE
+                                  " - Dates (e.g., Summer 2025):" DELIMITED BY SIZE
+                             INTO WS-Line
+                           END-STRING
+                           PERFORM OUTPUT-LINE
+                           PERFORM READ-INPUT
+                           MOVE InputRecord TO WS-INPUT-TRIM
+                           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+                           IF WS-INPUT-TRIM = SPACES
+                               MOVE "Dates are required. Please try again." TO WS-Line
+                               PERFORM OUTPUT-LINE
+                           END-IF
+                       END-PERFORM
+                       MOVE SPACES TO PF-Exp-Dates(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                       MOVE WS-INPUT-TRIM(1:30)
+                            TO PF-Exp-Dates(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+
+                       *> -------- Description (X(100)) [OPTIONAL]
+                       STRING "Experience #" DELIMITED BY SIZE
+                              WS-Num-Edit    DELIMITED BY SIZE
+                              " - Description (optional, max 100 chars, blank to skip):" DELIMITED BY SIZE
+                         INTO WS-Line
+                       END-STRING
+                       PERFORM OUTPUT-LINE
+                       PERFORM READ-INPUT
+                       MOVE InputRecord TO WS-INPUT-TRIM
+                       MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+                       IF WS-INPUT-TRIM = SPACES
+                           MOVE SPACES TO PF-Exp-Desc(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                       ELSE
+                           MOVE SPACES TO PF-Exp-Desc(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                           MOVE WS-INPUT-TRIM(1:100)
+                                TO PF-Exp-Desc(WS-Found-Index, PF-Exp-Count(WS-Found-Index))
+                       END-IF
+
+                   WHEN OTHER
+                       MOVE "Invalid input. Please enter Y or N." TO WS-Line
+                       PERFORM OUTPUT-LINE
+                       *> do not change count; loop repeats
+               END-EVALUATE
            END-PERFORM
 
-           *> ================= EDUCATION with Y/N =================
+
+           *> ================= EDUCATION with strict Y/N and required fields =================
            MOVE 0 TO PF-Edu-Count(WS-Found-Index)
            PERFORM UNTIL PF-Edu-Count(WS-Found-Index) >= 3
                MOVE "Add an education entry? (Y/N)" TO WS-Line
                PERFORM OUTPUT-LINE
                PERFORM READ-INPUT
                MOVE InputRecord(1:1) TO WS-ANS
-               IF WS-ANS NOT = "Y"
-                   EXIT PERFORM
-               END-IF
+               IF WS-ANS = "y" MOVE "Y" TO WS-ANS END-IF
+               IF WS-ANS = "n" MOVE "N" TO WS-ANS END-IF
 
-               ADD 1 TO PF-Edu-Count(WS-Found-Index)
-               MOVE PF-Edu-Count(WS-Found-Index) TO WS-Num-Edit
+               EVALUATE WS-ANS
+                   WHEN "N"
+                       EXIT PERFORM
 
-               *> Degree (X(30))
-               STRING "Education #" DELIMITED BY SIZE
-                      WS-Num-Edit   DELIMITED BY SIZE
-                      " - Degree:"  DELIMITED BY SIZE
-                 INTO WS-Line
-               END-STRING
-               PERFORM OUTPUT-LINE
-               PERFORM READ-INPUT
-               MOVE InputRecord TO WS-INPUT-TRIM
-               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
-               MOVE SPACES TO PF-Edu-Degree(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
-               MOVE WS-INPUT-TRIM(1:30)
-                    TO PF-Edu-Degree(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+                   WHEN "Y"
+                       ADD 1 TO PF-Edu-Count(WS-Found-Index)
+                       MOVE PF-Edu-Count(WS-Found-Index) TO WS-Num-Edit
 
-               *> University (X(40))
-               STRING "Education #"     DELIMITED BY SIZE
-                      WS-Num-Edit       DELIMITED BY SIZE
-                      " - University:"  DELIMITED BY SIZE
-                 INTO WS-Line
-               END-STRING
-               PERFORM OUTPUT-LINE
-               PERFORM READ-INPUT
-               MOVE InputRecord TO WS-INPUT-TRIM
-               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
-               MOVE SPACES TO PF-Edu-University(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
-               MOVE WS-INPUT-TRIM(1:40)
-                    TO PF-Edu-University(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+                       *> -------- Degree (X(30)) [REQUIRED]
+                       MOVE SPACES TO WS-INPUT-TRIM
+                       PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+                           STRING "Education #" DELIMITED BY SIZE
+                                  WS-Num-Edit   DELIMITED BY SIZE
+                                  " - Degree:"  DELIMITED BY SIZE
+                             INTO WS-Line
+                           END-STRING
+                           PERFORM OUTPUT-LINE
+                           PERFORM READ-INPUT
+                           MOVE InputRecord TO WS-INPUT-TRIM
+                           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+                           IF WS-INPUT-TRIM = SPACES
+                               MOVE "Degree is required. Please try again." TO WS-Line
+                               PERFORM OUTPUT-LINE
+                           END-IF
+                       END-PERFORM
+                       MOVE SPACES TO PF-Edu-Degree(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+                       MOVE WS-INPUT-TRIM(1:30)
+                            TO PF-Edu-Degree(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
 
-               *> Years (X(15))
-               STRING "Education #" DELIMITED BY SIZE
-                      WS-Num-Edit    DELIMITED BY SIZE
-                      " - Years (e.g., 2022-2026):" DELIMITED BY SIZE
-                 INTO WS-Line
-               END-STRING
-               PERFORM OUTPUT-LINE
-               PERFORM READ-INPUT
-               MOVE InputRecord TO WS-INPUT-TRIM
-               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
-               MOVE SPACES TO PF-Edu-Years(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
-               MOVE WS-INPUT-TRIM(1:15)
-                    TO PF-Edu-Years(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+                       *> -------- University (X(40)) [REQUIRED]
+                       MOVE SPACES TO WS-INPUT-TRIM
+                       PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+                           STRING "Education #"     DELIMITED BY SIZE
+                                  WS-Num-Edit       DELIMITED BY SIZE
+                                  " - University:"  DELIMITED BY SIZE
+                             INTO WS-Line
+                           END-STRING
+                           PERFORM OUTPUT-LINE
+                           PERFORM READ-INPUT
+                           MOVE InputRecord TO WS-INPUT-TRIM
+                           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+                           IF WS-INPUT-TRIM = SPACES
+                               MOVE "University is required. Please try again." TO WS-Line
+                               PERFORM OUTPUT-LINE
+                           END-IF
+                       END-PERFORM
+                       MOVE SPACES TO PF-Edu-University(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+                       MOVE WS-INPUT-TRIM(1:40)
+                            TO PF-Edu-University(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+
+                       *> -------- Years (X(15)) [REQUIRED]
+                       MOVE SPACES TO WS-INPUT-TRIM
+                       PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+                           STRING "Education #"             DELIMITED BY SIZE
+                                  WS-Num-Edit               DELIMITED BY SIZE
+                                  " - Years (e.g., 2022-2026):" DELIMITED BY SIZE
+                             INTO WS-Line
+                           END-STRING
+                           PERFORM OUTPUT-LINE
+                           PERFORM READ-INPUT
+                           MOVE InputRecord TO WS-INPUT-TRIM
+                           MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+                           IF WS-INPUT-TRIM = SPACES
+                               MOVE "Years are required. Please try again." TO WS-Line
+                               PERFORM OUTPUT-LINE
+                           END-IF
+                       END-PERFORM
+                       MOVE SPACES TO PF-Edu-Years(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+                       MOVE WS-INPUT-TRIM(1:15)
+                            TO PF-Edu-Years(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
+
+                   WHEN OTHER
+                       MOVE "Invalid input. Please enter Y or N." TO WS-Line
+                       PERFORM OUTPUT-LINE
+               END-EVALUATE
            END-PERFORM
+
 
            MOVE "Profile saved successfully!" TO WS-Line
            PERFORM OUTPUT-LINE.

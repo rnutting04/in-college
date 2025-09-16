@@ -1,22 +1,30 @@
+Create New Account
+bob
+Passw0rd!
 Log In
-juanito
-Valid123!
+bob
+Passw0rd!
 Create/Edit My Profile
-Juanito
-
-State College
-Engineering
-2004
-GREAT DEVELOPER
+Bobs
+Uncle
+University of Florida
+Computer Science
+2026
+I am passionate about software development and data science.
 Y
-Intern
-Tech Inc.
+Software Engineering Intern
+C&S Management
 Summer 2025
-Built apps.
-DONE
+Built automation for document workflows.
 Y
-AA degree
-No College
-2024-2045
-DONE
+Software Engineering Intern
+C&S Management
+Summer 2025
+Built automation for document workflows.
+Y
+Software Engineering Intern
+C&S Management
+Summer 2025
+Built automation for document workflows.
+J
 View My Profile
