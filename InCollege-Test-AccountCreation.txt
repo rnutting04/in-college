@@ -1,0 +1,23 @@
+Create New Account
+alice
+Short7!
+noupper1!
+NoDigit!!
+NoSpecial1
+Password1!@TooLong
+ValidPwd1!
+Create New Account
+alice
+Create New Account
+bob
+Abcd12$!
+Create New Account
+carol
+Abcdef12$#@+
+Create New Account
+dave
+DaveOK1!
+Create New Account
+erin
+ErinOK1!
+Create New Account
