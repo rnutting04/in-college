@@ -12,11 +12,13 @@
            *> Sequential file to store Users data
            SELECT UsersFile ASSIGN TO "InCollege-Users.txt"
                ORGANIZATION IS LINE SEQUENTIAL
-               ACCESS IS SEQUENTIAL.
-           *> Sequential file to store Profiles data
+               ACCESS IS SEQUENTIAL
+               FILE STATUS IS WS-Users-Status.
+
            SELECT ProfilesFile ASSIGN TO "InCollege-Profiles.txt"
                ORGANIZATION IS LINE SEQUENTIAL
-               ACCESS IS SEQUENTIAL.
+               ACCESS IS SEQUENTIAL
+               FILE STATUS IS WS-Profiles-Status.
 
        DATA DIVISION.
        FILE SECTION.
@@ -52,6 +54,11 @@
               10 PR-Edu-Years          PIC X(15).
 
        WORKING-STORAGE SECTION.
+
+       *> --- File status
+       01 WS-Users-Status     PIC XX VALUE "00".
+       01 WS-Profiles-Status  PIC XX VALUE "00".
+       *>-------
        01 WS-EOF-Flag                  PIC X VALUE "N".
            88 EOF                      VALUE "Y".
        01 WS-EOF-Flag-Input            PIC X VALUE "N".
@@ -140,7 +147,14 @@
            GOBACK.
 
            LOAD-USERS.
+               MOVE "00" TO WS-Users-Status
                OPEN INPUT UsersFile
+               IF WS-Users-Status = "35"
+                   *> File missing — create it empty, then reopen for input
+                   OPEN OUTPUT UsersFile
+                   CLOSE UsersFile
+                   OPEN INPUT UsersFile
+               END-IF
                *> Initialize count to 0
                MOVE 0 TO WS-Number-Users
                PERFORM UNTIL WS-Number-Users = 5 OR EOF
@@ -167,7 +181,13 @@
                CLOSE UsersFile.
 
        LOAD-PROFILES.
+           MOVE "00" TO WS-Profiles-Status
            OPEN INPUT ProfilesFile
+           IF WS-Profiles-Status = "35"
+               OPEN OUTPUT ProfilesFile
+               CLOSE ProfilesFile
+               OPEN INPUT ProfilesFile
+           END-IF
            MOVE 0 TO WS-Number-Profiles
            MOVE "N" TO WS-EOF-Flag
            PERFORM UNTIL WS-Number-Profiles = 5 OR EOF
