@@ -7,7 +7,30 @@ Passw0rd!
 Create/Edit My Profile
 Bobs
 Uncle
-University of Florida
+Example University
+Computer Science
+2026
+I am passionate about software development.
+Y
+Software Engineering Intern
+C&S
+Summer 2025
+Built automation for document workflows.
+Y
+Software Engineer
+C&S Management
+Fall 2025 - Spring 2026
+Built automation for document workflows.
+Y
+Software Engineer
+Example Place
+Summer 2025 - Present
+Built automation for document workflows.
+N
+Create/Edit My Profile
+Bobs
+Uncle
+Example University
 Computer Science
 2026
 I am passionate about software development and data science.
@@ -17,14 +40,14 @@ C&S Management
 Summer 2025
 Built automation for document workflows.
 Y
-Software Engineering Intern
+Software Engineer
 C&S Management
-Summer 2025
-Built automation for document workflows.
+Fall 2026 - Present
+Built full stack example app.
+N
 Y
-Software Engineering Intern
-C&S Management
-Summer 2025
-Built automation for document workflows.
-J
+Computer Science
+Example University
+2022 - 2026
+N
 View My Profile

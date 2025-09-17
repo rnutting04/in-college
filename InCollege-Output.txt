@@ -46,7 +46,66 @@ Experience #  3 - Company/Organization:
 Experience #  3 - Dates (e.g., Summer 2025):
 Experience #  3 - Description (optional, max 100 chars, blank to skip):
 Add an education entry? (Y/N)
-Invalid input. Please enter Y or N.
+Profile saved successfully!
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
+ --- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, blank to skip):
+Add an experience? (Y/N)
+Experience #  1 - Title:
+Experience #  1 - Company/Organization:
+Experience #  1 - Dates (e.g., Summer 2025):
+Experience #  1 - Description (optional, max 100 chars, blank to skip):
+Add an experience? (Y/N)
+Experience #  2 - Title:
+Experience #  2 - Company/Organization:
+Experience #  2 - Dates (e.g., Summer 2025):
+Experience #  2 - Description (optional, max 100 chars, blank to skip):
+Add an experience? (Y/N)
 Add an education entry? (Y/N)
-Invalid input. Please enter Y or N.
+Education #  1 - Degree:
+Education #  1 - University:
+Education #  1 - Years (e.g., 2022-2026):
 Add an education entry? (Y/N)
+Profile saved successfully!
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
+ --- Your Profile ---
+Name: Bobs Uncle
+University: Example University
+Major: Computer Science
+Graduation Year: 2026
+About Me: I am passionate about software development and data science.
+Experience:
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
+  Title: Software Engineer
+  Company: C&S Management
+  Dates: Fall 2026 - Present
+  Description: Built full stack example app.
+Education:
+  Degree: Computer Science
+  University: Example University
+  Years: 2022 - 2026
+--------------------
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
