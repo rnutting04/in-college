@@ -122,7 +122,10 @@
        01 WS-ANS                       PIC X VALUE SPACE.  *> Holds Y/N answers
 
        01 WS-INPUT-TRIM PIC X(100).
-
+       01 WS-Years-OK     PIC X VALUE "N".
+       88 Years-OK     VALUE "Y".
+       01 WS-Year-Start   PIC 9(4).
+       01 WS-Year-End     PIC 9(4).
 
        PROCEDURE DIVISION.
            PERFORM MAIN.
@@ -763,25 +766,49 @@
                        MOVE WS-INPUT-TRIM(1:40)
                             TO PF-Edu-University(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
 
-                       *> -------- Years (X(15)) [REQUIRED]
-                       MOVE SPACES TO WS-INPUT-TRIM
-                       PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+                       *> -------- Years (X(15)) [REQUIRED, validated YYYY-YYYY, 1900..2099, end>=start] --------
+                       MOVE "N" TO WS-Years-OK
+                       PERFORM UNTIL Years-OK
                            STRING "Education #"             DELIMITED BY SIZE
                                   WS-Num-Edit               DELIMITED BY SIZE
                                   " - Years (e.g., 2022-2026):" DELIMITED BY SIZE
                              INTO WS-Line
                            END-STRING
                            PERFORM OUTPUT-LINE
+
                            PERFORM READ-INPUT
                            MOVE InputRecord TO WS-INPUT-TRIM
                            MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+
                            IF WS-INPUT-TRIM = SPACES
                                MOVE "Years are required. Please try again." TO WS-Line
                                PERFORM OUTPUT-LINE
+                           ELSE
+                               *> Expect exactly 'YYYY-YYYY' (9 chars); allow nothing after position 9
+                               IF WS-INPUT-TRIM(1:4) NUMERIC
+                                  AND WS-INPUT-TRIM(5:1) = "-"
+                                  AND WS-INPUT-TRIM(6:4) NUMERIC
+                                  AND (FUNCTION LENGTH(FUNCTION TRIM(WS-INPUT-TRIM)) = 9)
+                                   MOVE WS-INPUT-TRIM(1:4) TO WS-Year-Start
+                                   MOVE WS-INPUT-TRIM(6:4) TO WS-Year-End
+
+                                   IF WS-Year-Start >= 1900 AND WS-Year-Start <= 2099
+                                      AND WS-Year-End   >= 1900 AND WS-Year-End   <= 2099
+                                      AND WS-Year-End   >= WS-Year-Start
+                                       SET Years-OK TO TRUE
+                                   ELSE
+                                       MOVE "Invalid year range. Use 1900-2099 and ensure end year >= start year." TO WS-Line
+                                       PERFORM OUTPUT-LINE
+                                   END-IF
+                               ELSE
+                                   MOVE "Invalid format. Please enter as YYYY-YYYY (e.g., 2022-2026)." TO WS-Line
+                                   PERFORM OUTPUT-LINE
+                               END-IF
                            END-IF
                        END-PERFORM
+
                        MOVE SPACES TO PF-Edu-Years(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
-                       MOVE WS-INPUT-TRIM(1:15)
+                       MOVE WS-INPUT-TRIM(1:10)
                             TO PF-Edu-Years(WS-Found-Index, PF-Edu-Count(WS-Found-Index))
 
                    WHEN OTHER
