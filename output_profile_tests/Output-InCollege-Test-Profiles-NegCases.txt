@@ -1,0 +1,68 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in
+Welcome, carol54!
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
+ --- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+University is required. Please try again.
+Enter University/College Attended:
+Enter Major:
+Major is required. Please try again.
+Enter Major:
+Enter Graduation Year (YYYY):
+Invalid year. Enter a 4-digit year between 1900 and 2099:
+Invalid year. Enter a 4-digit year between 1900 and 2099:
+Invalid year. Enter a 4-digit year between 1900 and 2099:
+Enter About Me (optional, max 200 chars, blank to skip):
+Add an experience? (Y/N)
+Experience #  1 - Title:
+Experience #  1 - Company/Organization:
+Experience #  1 - Dates (e.g., Summer 2025):
+Experience #  1 - Description (optional, max 100 chars, blank to skip):
+Add an experience? (Y/N)
+Add an education entry? (Y/N)
+Education #  1 - Degree:
+Education #  1 - University:
+Education #  1 - Years (e.g., 2022-2026):
+Add an education entry? (Y/N)
+Profile saved successfully!
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
+ --- Your Profile ---
+Name: Alice Wonderland
+University: Bellevue College
+Major: Business
+Graduation Year: 2020
+About Me: I like to draw fantasy characters
+Experience:
+  Title: Events Staff
+  Company: Marshall Student Center
+  Dates: 2024-2025
+  Description: Orginizing Events.
+Education:
+  Degree: High School diploma
+  University: No College
+  Years: 2010-2020
+--------------------
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
