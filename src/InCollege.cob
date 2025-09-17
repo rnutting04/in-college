@@ -792,9 +792,7 @@
                                    MOVE WS-INPUT-TRIM(1:4) TO WS-Year-Start
                                    MOVE WS-INPUT-TRIM(6:4) TO WS-Year-End
 
-                                   IF WS-Year-Start >= 1900 AND WS-Year-Start <= 2099
-                                      AND WS-Year-End   >= 1900 AND WS-Year-End   <= 2099
-                                      AND WS-Year-End   >= WS-Year-Start
+                                   IF WS-Year-End   >= WS-Year-Start
                                        SET Years-OK TO TRUE
                                    ELSE
                                        MOVE "Invalid year range. Use 1900-2099 and ensure end year >= start year." TO WS-Line
