@@ -1,5 +1,4 @@
-user1               Pass123!
-user2               Pass123!
-user3               Pass123!
-user4               Pass123!
-user5               Pass123!
+bob                 Passw0rd!
+alice               Passw0rd!
+help                Passw0rd!
+sue                 Passw0rd!

@@ -127,6 +127,11 @@
        01 WS-Year-Start   PIC 9(4).
        01 WS-Year-End     PIC 9(4).
 
+
+       01 WS-Search-FullName   PIC X(50).
+       01 WS-Display-Index     PIC 9 VALUE 0.
+       01 WS-FullName-Build    PIC X(50).
+
        PROCEDURE DIVISION.
            PERFORM MAIN.
            STOP RUN.
@@ -465,7 +470,7 @@
                        MOVE "Job search/internship is under construction." TO WS-Line
                        PERFORM OUTPUT-LINE
                    WHEN "Find someone you know"
-                       MOVE "Find someone you know is under construction." TO WS-Line
+                       PERFORM FIND-SOMEONE-YOU-KNOW
                        PERFORM OUTPUT-LINE
                    WHEN "Learn a new skill"
                        PERFORM LEARN-SKILL-MENU
@@ -819,52 +824,50 @@
            MOVE "Profile saved successfully!" TO WS-Line
            PERFORM OUTPUT-LINE.
 
-
-       VIEW-MY-PROFILE.
-           PERFORM FIND-PROFILE-INDEX
-           IF WS-Found-Index = 0
-               MOVE "No profile found. Use 'Create/Edit My Profile' first." TO WS-Line
+       VIEW-PROFILE-BY-INDEX.
+           IF WS-Display-Index = 0 OR WS-Display-Index > WS-Number-Profiles
+               MOVE "No profile found." TO WS-Line
                PERFORM OUTPUT-LINE
                EXIT PARAGRAPH
            END-IF
 
-           MOVE " --- Your Profile --- " TO WS-Line
+           MOVE " --- User Profile --- " TO WS-Line
            PERFORM OUTPUT-LINE
 
            MOVE SPACES TO WS-Line
            STRING "Name: " DELIMITED BY SIZE
-                  PF-FirstName(WS-Found-Index) DELIMITED BY SPACE
+                  FUNCTION TRIM(PF-FirstName(WS-Display-Index) TRAILING) DELIMITED BY SIZE
                   " " DELIMITED BY SIZE
-                  PF-LastName(WS-Found-Index)  DELIMITED BY SIZE
+                  FUNCTION TRIM(PF-LastName(WS-Display-Index) TRAILING)  DELIMITED BY SIZE
              INTO WS-Line
            END-STRING
            PERFORM OUTPUT-LINE
 
            MOVE SPACES TO WS-Line
            STRING "University: " DELIMITED BY SIZE
-                  PF-University(WS-Found-Index) DELIMITED BY SIZE
+                  FUNCTION TRIM(PF-University(WS-Display-Index) TRAILING) DELIMITED BY SIZE
              INTO WS-Line
            END-STRING
            PERFORM OUTPUT-LINE
 
            MOVE SPACES TO WS-Line
            STRING "Major: " DELIMITED BY SIZE
-                  PF-Major(WS-Found-Index) DELIMITED BY SIZE
+                  FUNCTION TRIM(PF-Major(WS-Display-Index) TRAILING) DELIMITED BY SIZE
              INTO WS-Line
            END-STRING
            PERFORM OUTPUT-LINE
 
            MOVE SPACES TO WS-Line
            STRING "Graduation Year: " DELIMITED BY SIZE
-                  PF-GradYear(WS-Found-Index) DELIMITED BY SIZE
+                  PF-GradYear(WS-Display-Index) DELIMITED BY SIZE
              INTO WS-Line
            END-STRING
            PERFORM OUTPUT-LINE
 
-           IF PF-About(WS-Found-Index) NOT = SPACES
+           IF PF-About(WS-Display-Index) NOT = SPACES
                MOVE SPACES TO WS-Line
                STRING "About Me: " DELIMITED BY SIZE
-                      PF-About(WS-Found-Index) DELIMITED BY SIZE
+                      PF-About(WS-Display-Index) DELIMITED BY SIZE
                  INTO WS-Line
                END-STRING
                PERFORM OUTPUT-LINE
@@ -872,37 +875,37 @@
 
            MOVE "Experience:" TO WS-Line
            PERFORM OUTPUT-LINE
-           IF PF-Exp-Count(WS-Found-Index) = 0
+           IF PF-Exp-Count(WS-Display-Index) = 0
                MOVE "  (none)" TO WS-Line
                PERFORM OUTPUT-LINE
            ELSE
                PERFORM VARYING COUNTER FROM 1 BY 1
-                       UNTIL COUNTER > PF-Exp-Count(WS-Found-Index)
+                       UNTIL COUNTER > PF-Exp-Count(WS-Display-Index)
                    MOVE SPACES TO WS-Line
                    STRING "  Title: " DELIMITED BY SIZE
-                          PF-Exp-Title(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                          PF-Exp-Title(WS-Display-Index, COUNTER) DELIMITED BY SIZE
                      INTO WS-Line
                    END-STRING
                    PERFORM OUTPUT-LINE
 
                    MOVE SPACES TO WS-Line
                    STRING "  Company: " DELIMITED BY SIZE
-                          PF-Exp-Company(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                          PF-Exp-Company(WS-Display-Index, COUNTER) DELIMITED BY SIZE
                      INTO WS-Line
                    END-STRING
                    PERFORM OUTPUT-LINE
 
                    MOVE SPACES TO WS-Line
                    STRING "  Dates: " DELIMITED BY SIZE
-                          PF-Exp-Dates(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                          PF-Exp-Dates(WS-Display-Index, COUNTER) DELIMITED BY SIZE
                      INTO WS-Line
                    END-STRING
                    PERFORM OUTPUT-LINE
 
-                   IF PF-Exp-Desc(WS-Found-Index, COUNTER) NOT = SPACES
+                   IF PF-Exp-Desc(WS-Display-Index, COUNTER) NOT = SPACES
                        MOVE SPACES TO WS-Line
                        STRING "  Description: " DELIMITED BY SIZE
-                              PF-Exp-Desc(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                              PF-Exp-Desc(WS-Display-Index, COUNTER) DELIMITED BY SIZE
                          INTO WS-Line
                        END-STRING
                        PERFORM OUTPUT-LINE
@@ -912,29 +915,29 @@
 
            MOVE "Education:" TO WS-Line
            PERFORM OUTPUT-LINE
-           IF PF-Edu-Count(WS-Found-Index) = 0
+           IF PF-Edu-Count(WS-Display-Index) = 0
                MOVE "  (none)" TO WS-Line
                PERFORM OUTPUT-LINE
            ELSE
                PERFORM VARYING COUNTER FROM 1 BY 1
-                       UNTIL COUNTER > PF-Edu-Count(WS-Found-Index)
+                       UNTIL COUNTER > PF-Edu-Count(WS-Display-Index)
                    MOVE SPACES TO WS-Line
                    STRING "  Degree: " DELIMITED BY SIZE
-                          PF-Edu-Degree(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                          PF-Edu-Degree(WS-Display-Index, COUNTER) DELIMITED BY SIZE
                      INTO WS-Line
                    END-STRING
                    PERFORM OUTPUT-LINE
 
                    MOVE SPACES TO WS-Line
                    STRING "  University: " DELIMITED BY SIZE
-                          PF-Edu-University(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                          PF-Edu-University(WS-Display-Index, COUNTER) DELIMITED BY SIZE
                      INTO WS-Line
                    END-STRING
                    PERFORM OUTPUT-LINE
 
                    MOVE SPACES TO WS-Line
                    STRING "  Years: " DELIMITED BY SIZE
-                          PF-Edu-Years(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                          PF-Edu-Years(WS-Display-Index, COUNTER) DELIMITED BY SIZE
                      INTO WS-Line
                    END-STRING
                    PERFORM OUTPUT-LINE
@@ -943,6 +946,58 @@
 
            MOVE "--------------------" TO WS-Line
            PERFORM OUTPUT-LINE.
+       VIEW-MY-PROFILE.
+           PERFORM FIND-PROFILE-INDEX
+           IF WS-Found-Index = 0
+               MOVE "No profile found. Use 'Create/Edit My Profile' first." TO WS-Line
+               PERFORM OUTPUT-LINE
+               EXIT PARAGRAPH
+           END-IF
+           MOVE WS-Found-Index TO WS-Display-Index
+           PERFORM VIEW-PROFILE-BY-INDEX.
+
+       FIND-SOMEONE-YOU-KNOW.
+           *> Prompt for full name (required)
+           MOVE SPACES TO WS-Search-FullName
+           PERFORM UNTIL WS-Search-FullName NOT = SPACES
+               MOVE "Enter the full name of the person you are looking for:" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-Search-FullName
+               MOVE FUNCTION TRIM(WS-Search-FullName TRAILING) TO WS-Search-FullName
+               IF WS-Search-FullName = SPACES
+                   MOVE "Full name is required. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
+
+           *> Search exact full-name match across profiles
+           MOVE 0 TO WS-Display-Index
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Profiles OR WS-Display-Index > 0
+               MOVE SPACES TO WS-FullName-Build
+               STRING
+                   FUNCTION TRIM(PF-FirstName(COUNTER) TRAILING) DELIMITED BY SIZE
+                   " "                                         DELIMITED BY SIZE
+                   FUNCTION TRIM(PF-LastName(COUNTER) TRAILING)  DELIMITED BY SIZE
+                 INTO WS-FullName-Build
+               END-STRING
+
+               IF WS-FullName-Build = WS-Search-FullName
+                   MOVE COUNTER TO WS-Display-Index
+               ELSE
+                   ADD 1 TO COUNTER
+               END-IF
+           END-PERFORM
+
+           IF WS-Display-Index > 0
+               MOVE " --- Found User Profile --- " TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM VIEW-PROFILE-BY-INDEX
+           ELSE
+               MOVE "No one by that name could be found." TO WS-Line
+               PERFORM OUTPUT-LINE
+           END-IF.
 
        LEARN-SKILL-MENU.
            PERFORM UNTIL EOF-Input

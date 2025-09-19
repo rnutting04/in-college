@@ -2,7 +2,8 @@ Welcome to InCollege!
 Log In
 Create New Account
 Enter your choice:
-All permitted accounts have been created, please come back later
+Enter new username
+Username already exists. Please try again
 Welcome to InCollege!
 Log In
 Create New Account
@@ -12,17 +13,8 @@ Welcome to InCollege!
 Log In
 Create New Account
 Enter your choice:
-Invalid choice. Please try again.
-Welcome to InCollege!
-Log In
-Create New Account
-Enter your choice:
-All permitted accounts have been created, please come back later
-Welcome to InCollege!
-Log In
-Create New Account
-Enter your choice:
-Invalid choice. Please try again.
+Enter new username
+Username already exists. Please try again
 Welcome to InCollege!
 Log In
 Create New Account
@@ -32,7 +24,8 @@ Welcome to InCollege!
 Log In
 Create New Account
 Enter your choice:
-All permitted accounts have been created, please come back later
+Enter new username
+Username already exists. Please try again
 Welcome to InCollege!
 Log In
 Create New Account
@@ -42,42 +35,13 @@ Welcome to InCollege!
 Log In
 Create New Account
 Enter your choice:
-Invalid choice. Please try again.
-Welcome to InCollege!
-Log In
-Create New Account
-Enter your choice:
-All permitted accounts have been created, please come back later
-Welcome to InCollege!
-Log In
-Create New Account
-Enter your choice:
-Invalid choice. Please try again.
+Enter new username
+Username already exists. Please try again
 Welcome to InCollege!
 Log In
 Create New Account
 Enter your choice:
 Invalid choice. Please try again.
-Welcome to InCollege!
-Log In
-Create New Account
-Enter your choice:
-All permitted accounts have been created, please come back later
-Welcome to InCollege!
-Log In
-Create New Account
-Enter your choice:
-Invalid choice. Please try again.
-Welcome to InCollege!
-Log In
-Create New Account
-Enter your choice:
-Invalid choice. Please try again.
-Welcome to InCollege!
-Log In
-Create New Account
-Enter your choice:
-All permitted accounts have been created, please come back later
 Welcome to InCollege!
 Log In
 Create New Account
@@ -85,7 +49,7 @@ Enter your choice:
 Please enter your username:
 Please enter your password:
 You have successfully logged in
-Welcome, user1!
+Welcome, sue!
 Create/Edit My Profile
 View My Profile
 Search for a job
@@ -99,340 +63,6 @@ Enter University/College Attended:
 Enter Major:
 Enter Graduation Year (YYYY):
 Enter About Me (optional, max 200 chars, blank to skip):
-Add an experience? (Y/N)
-Experience #  1 - Title:
-Experience #  1 - Company/Organization:
-Experience #  1 - Dates (e.g., Summer 2025):
-Experience #  1 - Description (optional, max 100 chars, blank to skip):
-Add an experience? (Y/N)
-Add an education entry? (Y/N)
-Education #  1 - Degree:
-Education #  1 - University:
-Education #  1 - Years (e.g., 2022-2026):
-Add an education entry? (Y/N)
-Profile saved successfully!
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
- --- Your Profile ---
-Name: First1 Last1
-University: Uni1
-Major: Major1
-Graduation Year: 2025
-Experience:
-  Title: Title1
-  Company: Company1
-  Dates: Dates1
-  Description: Desc1
-Education:
-  Degree: Degree1
-  University: EduUni1
-  Years: EduYears1
---------------------
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
- --- Create/Edit Profile ---
-Enter First Name:
-Enter Last Name:
-Enter University/College Attended:
-Enter Major:
-Enter Graduation Year (YYYY):
-Enter About Me (optional, max 200 chars, blank to skip):
-Add an experience? (Y/N)
-Experience #  1 - Title:
-Experience #  1 - Company/Organization:
-Experience #  1 - Dates (e.g., Summer 2025):
-Experience #  1 - Description (optional, max 100 chars, blank to skip):
-Add an experience? (Y/N)
-Experience #  2 - Title:
-Experience #  2 - Company/Organization:
-Experience #  2 - Dates (e.g., Summer 2025):
-Experience #  2 - Description (optional, max 100 chars, blank to skip):
-Add an experience? (Y/N)
-Add an education entry? (Y/N)
-Education #  1 - Degree:
-Education #  1 - University:
-Education #  1 - Years (e.g., 2022-2026):
-Add an education entry? (Y/N)
-Education #  2 - Degree:
-Education #  2 - University:
-Education #  2 - Years (e.g., 2022-2026):
-Add an education entry? (Y/N)
-Profile saved successfully!
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
- --- Your Profile ---
-Name: First2 Last2
-University: Uni2
-Major: Major2
-Graduation Year: 2026
-Experience:
-  Title: Title2
-  Company: Company2
-  Dates: Dates2
-  Description: Desc2
-  Title: Title3
-  Company: Company3
-  Dates: Dates3
-  Description: N
-Education:
-  Degree: Degree2
-  University: EduUni2
-  Years: EduYears2
-  Degree: Degree3
-  University: EduUni3
-  Years: EduYears3
---------------------
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
- --- Create/Edit Profile ---
-Enter First Name:
-First Name is required. Please try again.
-Enter First Name:
-First Name is required. Please try again.
-Enter First Name:
-Enter Last Name:
-Enter University/College Attended:
-Enter Major:
-Enter Graduation Year (YYYY):
-Invalid year. Enter a 4-digit year between 1900 and 2099:
-Invalid year. Enter a 4-digit year between 1900 and 2099:
-Enter About Me (optional, max 200 chars, blank to skip):
-Add an experience? (Y/N)
-Add an education entry? (Y/N)
-Education #  1 - Degree:
-Education #  1 - University:
-University is required. Please try again.
-Education #  1 - University:se try again.
-Education #  1 - Years (e.g., 2022-2026):
-Add an education entry? (Y/N)
-Invalid input. Please enter Y or N.
-Add an education entry? (Y/N)
-Education #  2 - Degree:
-Education #  2 - University:
-Education #  2 - Years (e.g., 2022-2026):
-Add an education entry? (Y/N)
-Invalid input. Please enter Y or N.
-Add an education entry? (Y/N)
-Education #  3 - Degree:
-Education #  3 - University:
-Education #  3 - Years (e.g., 2022-2026):
-Profile saved successfully!
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
- --- Your Profile ---
-Name: Uni3 Major3
-University: abcd
-Major: 202
-Graduation Year: 2025
-Experience:
-  (none)
-Education:
-  Degree: Title4
-  University: Company4
-  Years: Dates4
-  Degree: Title5
-  University: Company5
-  Years: Dates5
-  Degree: Title6
-  University: Company6
-  Years: Dates6
---------------------
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
- --- Create/Edit Profile ---
-Enter First Name:
-Enter Last Name:
-Enter University/College Attended:
-Enter Major:
-Enter Graduation Year (YYYY):
-Enter About Me (optional, max 200 chars, blank to skip):
-Add an experience? (Y/N)
-Invalid input. Please enter Y or N.
 Add an experience? (Y/N)
 Experience #  1 - Title:
 Experience #  1 - Company/Organization:
@@ -449,130 +79,8 @@ Experience #  3 - Company/Organization:
 Experience #  3 - Dates (e.g., Summer 2025):
 Experience #  3 - Description (optional, max 100 chars, blank to skip):
 Add an education entry? (Y/N)
-Profile saved successfully!
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
- --- Your Profile ---
-Name: First4 Last4
-University: Uni4
-Major: Major4
-Graduation Year: 2027
-About Me: About4 with exactly 200 characters: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
-Experience:
-  Title: Title7
-  Company: Company7
-  Dates: Dates7
-  Description: N
-  Title: Title8
-  Company: Company8
-  Dates: Dates8
-  Description: Desc8
-  Title: Title9
-  Company: Company9
-  Dates: Dates9
-  Description: Desc9
-Education:
-  (none)
---------------------
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
-Invalid choice. Please try again.
-Create/Edit My Profile
-View My Profile
-Search for a job
-Find someone you know
-Learn a new skill
-Enter your choice:
- --- Create/Edit Profile ---
-Enter First Name:
-Enter Last Name:
-Enter University/College Attended:
-Enter Major:
-Enter Graduation Year (YYYY):
-Enter About Me (optional, max 200 chars, blank to skip):
-Add an experience? (Y/N)
-Invalid input. Please enter Y or N.
-Add an experience? (Y/N)
-Experience #  1 - Title:
-Experience #  1 - Company/Organization:
-Company/Organization is required. Please try again.
-Experience #  1 - Company/Organization:e try again.
-Experience #  1 - Dates (e.g., Summer 2025):
-Dates are required. Please try again.
-Experience #  1 - Dates (e.g., Summer 2025):
-Experience #  1 - Description (optional, max 100 chars, blank to skip):
-Add an experience? (Y/N)
-Experience #  2 - Title:
-Title is required. Please try again.
-Experience #  2 - Title:e try again.
-Experience #  2 - Company/Organization:
-Experience #  2 - Dates (e.g., Summer 2025):
-Experience #  2 - Description (optional, max 100 chars, blank to skip):
-Add an experience? (Y/N)
-Add an education entry? (Y/N)
 Education #  1 - Degree:
 Education #  1 - University:
-University is required. Please try again.
-Education #  1 - University:se try again.
-Education #  1 - Years (e.g., 2022-2026):
-Years are required. Please try again.
 Education #  1 - Years (e.g., 2022-2026):
 Add an education entry? (Y/N)
 Profile saved successfully!
@@ -582,23 +90,29 @@ Search for a job
 Find someone you know
 Learn a new skill
 Enter your choice:
- --- Your Profile ---
-Name: First5 Last5
-University: Uni5
-Major: Major5
-Graduation Year: 2028
+ --- User Profile ---
+Name: Sue Smith
+University: University of Florida
+Major: Computer Science
+Graduation Year: 2026
+About Me: I am passionate about software development and data science.
 Experience:
-  Title: Title10
-  Company: Company10
-  Dates: Dates10
-  Title: Company11
-  Company: Dates11
-  Dates: Desc11
-  Description: N
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
 Education:
-  Degree: Degree7
-  University: EduUni7
-  Years: EduYears7
+  Degree: Computer
+  University: USF
+  Years: 2010-2015
 --------------------
 Create/Edit My Profile
 View My Profile
@@ -606,7 +120,33 @@ Search for a job
 Find someone you know
 Learn a new skill
 Enter your choice:
-Invalid choice. Please try again.
+Enter the full name of the person you are looking for:
+ --- Found User Profile ---
+ --- User Profile ---
+Name: Bobs Uncle
+University: University of Florida
+Major: Computer Science
+Graduation Year: 2026
+About Me: I am passionate about software development and data science.
+Experience:
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
+Education:
+  Degree: Computer
+  University: USF
+  Years: 2010-2015
+--------------------
+--------------------
 Create/Edit My Profile
 View My Profile
 Search for a job

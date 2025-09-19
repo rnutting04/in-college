@@ -1,181 +1,45 @@
 Create New Account
-user1
-Pass123!
+bob
+Passw0rd!
 Create New Account
-user2
-Pass123!
+alice
+Passw0rd!
 Create New Account
-user3
-Pass123!
+help
+Passw0rd!
 Create New Account
-user4
-Pass123!
-Create New Account
-user5
-Pass123!
-Create New Account
+sue
+Passw0rd!
 Log In
-user1
-Pass123!
+sue
+Passw0rd!
 Create/Edit My Profile
-First1
-Last1
-Uni1
-Major1
-2025
-
-Y
-Title1
-Company1
-Dates1
-Desc1
-N
-Y
-Degree1
-EduUni1
-EduYears1
-N
-View My Profile
-Log In
-user2
-Pass123!
-Create/Edit My Profile
-First2
-Last2
-Uni2
-Major2
+Sue
+Smith
+University of Florida
+Computer Science
 2026
-
+I am passionate about software development and data science.
 Y
-Title2
-Company2
-Dates2
-Desc2
+Software Engineering Intern
+C&S Management
+Summer 2025
+Built automation for document workflows.
 Y
-Title3
-Company3
-Dates3
-N
-N
+Software Engineering Intern
+C&S Management
+Summer 2025
+Built automation for document workflows.
 Y
-Degree2
-EduUni2
-EduYears2
+Software Engineering Intern
+C&S Management
+Summer 2025
+Built automation for document workflows.
 Y
-Degree3
-EduUni3
-EduYears3
-N
-View My Profile
-Log In
-user3
-Pass123!
-Create/Edit My Profile
-
-
-Uni3
-Major3
-abcd
-202
-1800
-2100
-2025
-
-N
-Y
-Title4
-
-Company4
-Dates4
-Desc4
-Y
-Title5
-Company5
-Dates5
-
-Y
-Title6
-Company6
-Dates6
-This is a very long description that exceeds 100 characters to test truncation or handling: ...........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-N
-N
-Y
-Degree4
-
-
-EduUni4
-EduYears4
-Y
-Degree5
-EduUni5
-EduYears5
+Computer
+USF
+2010-2015
 N
 View My Profile
-Log In
-user4
-Pass123!
-Create/Edit My Profile
-First4
-Last4
-Uni4
-Major4
-2027
-About4 with exactly 200 characters: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
-
-Y
-Title7
-Company7
-Dates7
-N
-Y
-Title8
-Company8
-Dates8
-Desc8
-Y
-Title9
-Company9
-Dates9
-Desc9
-N
-Y
-Degree6
-EduUni6
-EduYears6
-N
-View My Profile
-Log In
-user5
-Pass123!
-Create/Edit My Profile
-First5
-Last5
-Uni5
-Major5
-2028
-
-
-Y
-Title10
-
-Company10
-
-Dates10
-
-Y
-
-Company11
-Dates11
-Desc11
-N
-N
-Y
-Degree7
-
-EduUni7
-
-EduYears7
-N
-View My Profile
-Create New Account
+Find someone you know
+Bobs Uncle
