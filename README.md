@@ -25,6 +25,7 @@ in-college/
 ├── InCollege-Input.txt  # Example input file
 ├── InCollege-Output.txt # Example output file
 ├── InCollege-Users.txt  # Stores created accounts
+├── InCollege-Profiles.txt # Stores user profiles
 └── README.md            # Project documentation
 ```
 
