@@ -1,0 +1,79 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+Enter new username
+Enter new password
+Password must be 8-12 characters with at least one uppercase letter, one digit, and one special char
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in
+Welcome, bob!
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
+ --- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, blank to skip):
+Add an experience? (Y/N)
+Experience #  1 - Title:
+Experience #  1 - Company/Organization:
+Experience #  1 - Dates (e.g., Summer 2025):
+Experience #  1 - Description (optional, max 100 chars, blank to skip):
+Add an experience? (Y/N)
+Experience #  2 - Title:
+Experience #  2 - Company/Organization:
+Experience #  2 - Dates (e.g., Summer 2025):
+Experience #  2 - Description (optional, max 100 chars, blank to skip):
+Add an experience? (Y/N)
+Experience #  3 - Title:
+Experience #  3 - Company/Organization:
+Experience #  3 - Dates (e.g., Summer 2025):
+Experience #  3 - Description (optional, max 100 chars, blank to skip):
+Add an education entry? (Y/N)
+Profile saved successfully!
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
+ --- Your Profile ---
+Name: Bobs Uncle
+University: University of Florida
+Major: Computer Science
+Graduation Year: 2026
+About Me: I am passionate about software development and data science.
+Experience:
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
+  Title: Software Engineering Intern
+  Company: C&S Management
+  Dates: Summer 2025
+  Description: Built automation for document workflows.
+Education:
+  (none)
+--------------------
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:

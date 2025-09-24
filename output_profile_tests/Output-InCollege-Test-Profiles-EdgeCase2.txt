@@ -1,0 +1,91 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in
+Welcome, alice123!
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
+ --- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, blank to skip):
+Add an experience? (Y/N)
+Experience #  1 - Title:
+Experience #  1 - Company/Organization:
+Experience #  1 - Dates (e.g., Summer 2025):
+Experience #  1 - Description (optional, max 100 chars, blank to skip):
+Add an experience? (Y/N)
+Experience #  2 - Title:
+Experience #  2 - Company/Organization:
+Experience #  2 - Dates (e.g., Summer 2025):
+Experience #  2 - Description (optional, max 100 chars, blank to skip):
+Add an experience? (Y/N)
+Experience #  3 - Title:
+Experience #  3 - Company/Organization:
+Experience #  3 - Dates (e.g., Summer 2025):
+Experience #  3 - Description (optional, max 100 chars, blank to skip):
+Add an education entry? (Y/N)
+Education #  1 - Degree:
+Education #  1 - University:
+Education #  1 - Years (e.g., 2022-2026):
+Add an education entry? (Y/N)
+Education #  2 - Degree:
+Education #  2 - University:
+Education #  2 - Years (e.g., 2022-2026):
+Add an education entry? (Y/N)
+Education #  3 - Degree:
+Education #  3 - University:
+Education #  3 - Years (e.g., 2022-2026):
+Profile saved successfully!
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
+ --- Your Profile ---
+Name: Alice Patrick
+University: Harvard
+Major: Mechanical Engineering
+Graduation Year: 2024
+About Me: Keen on racing cars
+Experience:
+  Title: Intern
+  Company: Tech Inc.
+  Dates: Spring 2024
+  Description: Helped to build robots.
+  Title: Part-Time job
+  Company: Tesla Motors
+  Dates: Fall 2025
+  Description: Built AI robots from scratch.
+  Title: Full-Time job
+  Company: NASA
+  Dates: Summer 2025
+  Description: Built rocketships to get them ready to launch to Mars
+Education:
+  Degree: AA degree
+  University: USF
+  Years: 2021-2022
+  Degree: Bachelor's
+  University: Harvard
+  Years: 2023-2024
+  Degree: Master's
+  University: Oxford
+  Years: 2025
+--------------------
+Create/Edit My Profile
+View My Profile
+Search for a job
+Find someone you know
+Learn a new skill
+Enter your choice:
