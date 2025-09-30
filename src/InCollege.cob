@@ -173,6 +173,7 @@
 
            PERFORM LOAD-USERS
            PERFORM LOAD-PROFILES
+           PERFORM LOAD-REQUESTS
 
            PERFORM UNTIL EOF-Input
                PERFORM MAIN-MENU
@@ -180,6 +181,7 @@
 
            PERFORM SAVE-USERS
            PERFORM SAVE-PROFILES
+           PERFORM SAVE-REQUESTS
 
            CLOSE InputFile
            CLOSE OutputFile
@@ -312,6 +314,42 @@
                    WHEN InputRecord = "Create New Account"
                        PERFORM CREATE-ACCOUNT
                 END-EVALUATE.
+
+
+       LOAD-REQUESTS.
+           MOVE "00" TO WS-Connections-Status
+           OPEN INPUT ConnectionsFile
+           IF WS-Connections-Status = "35"
+               *> File missing — create empty then reopen
+               OPEN OUTPUT ConnectionsFile
+               CLOSE ConnectionsFile
+               OPEN INPUT ConnectionsFile
+           END-IF
+           MOVE 0 TO WS-Num-Requests
+           MOVE "N" TO WS-EOF-Flag
+           PERFORM UNTIL WS-Num-Requests = 50 OR EOF
+               READ ConnectionsFile INTO ConnectionRecord
+                   AT END SET EOF TO TRUE
+                   NOT AT END
+                       ADD 1 TO WS-Num-Requests
+                       MOVE CR-Sender    TO WR-Sender(WS-Num-Requests)
+                       MOVE CR-Recipient TO WR-Recipient(WS-Num-Requests)
+                       MOVE CR-Status    TO WR-Status(WS-Num-Requests)
+               END-READ
+           END-PERFORM
+           CLOSE ConnectionsFile
+           MOVE "N" TO WS-EOF-Flag.
+
+       SAVE-REQUESTS.
+           OPEN OUTPUT ConnectionsFile
+           PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Num-Requests
+               MOVE WR-Sender(COUNTER)    TO CR-Sender
+               MOVE WR-Recipient(COUNTER) TO CR-Recipient
+               MOVE WR-Status(COUNTER)    TO CR-Status
+               WRITE ConnectionRecord
+           END-PERFORM
+           CLOSE ConnectionsFile.
+
        OUTPUT-LINE.
            MOVE WS-Line TO OutputRecord
            DISPLAY WS-Line
@@ -325,6 +363,7 @@
                        SET EOF-Input TO TRUE
                        PERFORM SAVE-USERS
                        PERFORM SAVE-PROFILES
+                       PERFORM SAVE-REQUESTS
                        CLOSE InputFile
                        CLOSE OutputFile
                        STOP RUN
