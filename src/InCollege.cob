@@ -20,6 +20,12 @@
                ACCESS IS SEQUENTIAL
                FILE STATUS IS WS-Profiles-Status.
 
+           *> Sequential file to store Pending Connection Requests
+           SELECT ConnectionsFile ASSIGN TO "InCollege-Connections.txt"
+               ORGANIZATION IS LINE SEQUENTIAL
+               ACCESS IS SEQUENTIAL
+               FILE STATUS IS WS-Connections-Status.
+
        DATA DIVISION.
        FILE SECTION.
        FD  InputFile.
@@ -53,6 +59,13 @@
               10 PR-Edu-University     PIC X(40).
               10 PR-Edu-Years          PIC X(15).
 
+       FD  ConnectionsFile.
+       01  ConnectionRecord.
+           05 CR-Sender                PIC X(20).
+           05 CR-Recipient             PIC X(20).
+           05 CR-Status                PIC X(8).
+
+
        WORKING-STORAGE SECTION.
 
        *> --- File status
@@ -70,6 +83,24 @@
            05 WS-User OCCURS 5 TIMES.
               10 WS-Username           PIC X(20).
               10 WS-Password           PIC X(12).
+
+       *> --- Connections: status + table
+       01  WS-Connections-Status      PIC XX VALUE "00".
+       01  WS-Num-Requests            PIC 9(3) VALUE 0.
+
+       01  WS-Requests-Tbl.
+           05 WS-Req OCCURS 50 TIMES.
+              10 WR-Sender            PIC X(20).
+              10 WR-Recipient         PIC X(20).
+              10 WR-Status            PIC X(8).
+
+       *> Reusable constants (padding as fixed width)
+       01  CONST.
+           05 CONST-PENDING           PIC X(8) VALUE 'PENDING  '.
+
+       *> Search/flow state for Epic 4
+       01  WS-Search-Target-User      PIC X(20) VALUE SPACES.
+       01  WS-Search-Target-Fullname  PIC X(50) VALUE SPACES.
 
        01 WS-Line                      PIC X(100).
        01 COUNTER                      PIC 9(2) VALUE 0.
