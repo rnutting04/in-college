@@ -1181,6 +1181,35 @@
                PERFORM OUTPUT-LINE
            END-IF.
 
+       CANNOT-SEND-TO-SELF.
+           *> USING sender recipient; GIVING Y if same, else N
+           PROCEDURE DIVISION USING BY REFERENCE WS-Username WS-Char
+                              GIVING WS-ANS.
+           MOVE "N" TO WS-ANS
+           IF WS-Username = WS-Char
+               MOVE "Y" TO WS-ANS
+           END-IF.
+
+       REQUEST-EXISTS-BETWEEN.
+           *> USING sender recipient; GIVING Y if any pending exists either way
+           PROCEDURE DIVISION USING BY REFERENCE WS-Username WS-Char
+                              GIVING WS-ANS.
+           MOVE "N" TO WS-ANS
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Num-Requests OR WS-ANS = "Y"
+               IF WR-Status(COUNTER) = CONST-PENDING
+                  AND (
+                       (WR-Sender(COUNTER)    = WS-Username AND
+                        WR-Recipient(COUNTER) = WS-Char)
+                       OR
+                       (WR-Sender(COUNTER)    = WS-Char AND
+                        WR-Recipient(COUNTER) = WS-Username)
+                      )
+                   MOVE "Y" TO WS-ANS
+               END-IF
+               ADD 1 TO COUNTER
+           END-PERFORM.
+
        VIEW-PENDING-REQUESTS.
            MOVE "--- Pending Connection Requests ---" TO WS-Line
            PERFORM OUTPUT-LINE
