@@ -20,6 +20,11 @@
                ACCESS IS SEQUENTIAL
                FILE STATUS IS WS-Profiles-Status.
 
+           SELECT ConnectionsFile ASSIGN TO "InCollege-Connections.txt"
+               ORGANIZATION IS LINE SEQUENTIAL
+               ACCESS IS SEQUENTIAL
+               FILE STATUS IS WS-Connections-Status.
+
        DATA DIVISION.
        FILE SECTION.
        FD  InputFile.
@@ -53,11 +58,18 @@
               10 PR-Edu-University     PIC X(40).
               10 PR-Edu-Years          PIC X(15).
 
+       FD  ConnectionsFile.
+       01  ConnectionRecord.
+           05 CR-From-Username         PIC X(20).
+           05 CR-To-Username           PIC X(20).
+           05 CR-Status                PIC X(10).
+
        WORKING-STORAGE SECTION.
 
        *> --- File status
        01 WS-Users-Status     PIC XX VALUE "00".
        01 WS-Profiles-Status  PIC XX VALUE "00".
+       01 WS-Connections-Status PIC XX VALUE "00".
        *>-------
        01 WS-EOF-Flag                  PIC X VALUE "N".
            88 EOF                      VALUE "Y".
@@ -132,6 +144,20 @@
        01 WS-Display-Index     PIC 9 VALUE 0.
        01 WS-FullName-Build    PIC X(50).
 
+       *> Connections
+       01 WS-Number-Connections        PIC 99 VALUE 0.
+       01 WS-Connection-Table.
+           05 WS-Connection OCCURS 20 TIMES.
+              10 CN-From-Username      PIC X(20).
+              10 CN-To-Username        PIC X(20).
+              10 CN-Status             PIC X(10).
+
+       01 WS-Temp-Username             PIC X(20).
+       01 WS-Connection-Valid          PIC X VALUE "Y".
+           88 Connection-Valid         VALUE "Y".
+       01 WS-Has-Pending               PIC X VALUE "N".
+           88 Has-Pending              VALUE "Y".
+
        PROCEDURE DIVISION.
            PERFORM MAIN.
            STOP RUN.
@@ -142,6 +168,7 @@
 
            PERFORM LOAD-USERS
            PERFORM LOAD-PROFILES
+           PERFORM LOAD-CONNECTIONS
 
            PERFORM UNTIL EOF-Input
                PERFORM MAIN-MENU
@@ -149,6 +176,7 @@
 
            PERFORM SAVE-USERS
            PERFORM SAVE-PROFILES
+           PERFORM SAVE-CONNECTIONS
 
            CLOSE InputFile
            CLOSE OutputFile
@@ -245,6 +273,39 @@
            END-PERFORM
            CLOSE ProfilesFile.
 
+       LOAD-CONNECTIONS.
+           MOVE "00" TO WS-Connections-Status
+           OPEN INPUT ConnectionsFile
+           IF WS-Connections-Status = "35"
+               OPEN OUTPUT ConnectionsFile
+               CLOSE ConnectionsFile
+               OPEN INPUT ConnectionsFile
+           END-IF
+           MOVE 0 TO WS-Number-Connections
+           MOVE "N" TO WS-EOF-Flag
+           PERFORM UNTIL WS-Number-Connections = 20 OR EOF
+               READ ConnectionsFile INTO ConnectionRecord
+                   AT END SET EOF TO TRUE
+                   NOT AT END
+                       ADD 1 TO WS-Number-Connections
+                       MOVE CR-From-Username TO CN-From-Username(WS-Number-Connections)
+                       MOVE CR-To-Username   TO CN-To-Username(WS-Number-Connections)
+                       MOVE CR-Status        TO CN-Status(WS-Number-Connections)
+               END-READ
+           END-PERFORM
+           CLOSE ConnectionsFile
+           MOVE "N" TO WS-EOF-Flag.
+
+       SAVE-CONNECTIONS.
+           OPEN OUTPUT ConnectionsFile
+           PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Number-Connections
+               MOVE CN-From-Username(COUNTER) TO CR-From-Username
+               MOVE CN-To-Username(COUNTER)   TO CR-To-Username
+               MOVE CN-Status(COUNTER)        TO CR-Status
+               WRITE ConnectionRecord
+           END-PERFORM
+           CLOSE ConnectionsFile.
+
            MAIN-MENU.
                PERFORM UNTIL EOF-Input
                        OR InputRecord = "Create New Account"
@@ -252,9 +313,9 @@
                    *> Display menu header and options
                    MOVE "Welcome to InCollege!" TO WS-Line
                    PERFORM OUTPUT-LINE
-                   MOVE "Log In" TO WS-Line
+                   MOVE "1. Log In" TO WS-Line
                    PERFORM OUTPUT-LINE
-                   MOVE "Create New Account" TO WS-Line
+                   MOVE "2. Create New Account" TO WS-Line
                    PERFORM OUTPUT-LINE
                    MOVE "Enter your choice:" TO WS-Line
                    PERFORM OUTPUT-LINE
@@ -294,6 +355,7 @@
                        SET EOF-Input TO TRUE
                        PERFORM SAVE-USERS
                        PERFORM SAVE-PROFILES
+                       PERFORM SAVE-CONNECTIONS
                        CLOSE InputFile
                        CLOSE OutputFile
                        STOP RUN
@@ -323,7 +385,7 @@
                    PERFORM UNTIL COUNTER > WS-Number-Users
                        IF Input-Username = WS-Username(COUNTER)
                           AND Input-Password = WS-Password(COUNTER)
-                           MOVE "You have successfully logged in" TO WS-Line
+                           MOVE "You have successfully logged in." TO WS-Line
                            PERFORM OUTPUT-LINE
                            MOVE "Y" TO WS-Logged-In
                            MOVE Input-Username TO WS-Current-Username
@@ -446,15 +508,13 @@
            PERFORM OUTPUT-LINE
 
            PERFORM UNTIL EOF-Input
-               MOVE "Create/Edit My Profile" TO WS-Line
+               MOVE "1. View My Profile" TO WS-Line
                PERFORM OUTPUT-LINE
-               MOVE "View My Profile" TO WS-Line
+               MOVE "2. Search for User" TO WS-Line
                PERFORM OUTPUT-LINE
-               MOVE "Search for a job" TO WS-Line
+               MOVE "3. Learn a New Skill" TO WS-Line
                PERFORM OUTPUT-LINE
-               MOVE "Find someone you know" TO WS-Line
-               PERFORM OUTPUT-LINE
-               MOVE "Learn a new skill" TO WS-Line
+               MOVE "4. View My Pending Connection Requests" TO WS-Line
                PERFORM OUTPUT-LINE
                MOVE "Enter your choice:" TO WS-Line
                PERFORM OUTPUT-LINE
@@ -471,14 +531,45 @@
                        PERFORM OUTPUT-LINE
                    WHEN "Find someone you know"
                        PERFORM FIND-SOMEONE-YOU-KNOW
-                       PERFORM OUTPUT-LINE
+                   WHEN "Search for User"
+                       PERFORM FIND-SOMEONE-YOU-KNOW
                    WHEN "Learn a new skill"
                        PERFORM LEARN-SKILL-MENU
+                   WHEN "View My Pending Connection Requests"
+                       PERFORM VIEW-PENDING-REQUESTS
                    WHEN OTHER
                        MOVE "Invalid choice. Please try again." TO WS-Line
                        PERFORM OUTPUT-LINE
                END-EVALUATE
            END-PERFORM.
+
+       VIEW-PENDING-REQUESTS.
+           MOVE "--- Pending Connection Requests ---" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           MOVE 0 TO COUNTER
+           MOVE 1 TO WS-Found-Index
+           PERFORM UNTIL WS-Found-Index > WS-Number-Connections
+               IF CN-To-Username(WS-Found-Index) = WS-Current-Username
+                  AND CN-Status(WS-Found-Index) = "PENDING"
+                   ADD 1 TO COUNTER
+                   MOVE SPACES TO WS-Line
+                   STRING "A connection request from " DELIMITED BY SIZE
+                          FUNCTION TRIM(CN-From-Username(WS-Found-Index) TRAILING) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+               END-IF
+               ADD 1 TO WS-Found-Index
+           END-PERFORM
+
+           IF COUNTER = 0
+               MOVE "You have no pending connection requests at this time." TO WS-Line
+               PERFORM OUTPUT-LINE
+           END-IF
+
+           MOVE "-----------------------------------" TO WS-Line
+           PERFORM OUTPUT-LINE.
 
        FIND-PROFILE-INDEX.
            MOVE 0 TO WS-Found-Index
@@ -831,7 +922,7 @@
                EXIT PARAGRAPH
            END-IF
 
-           MOVE " --- User Profile --- " TO WS-Line
+           MOVE "--- Found User Profile ---" TO WS-Line
            PERFORM OUTPUT-LINE
 
            MOVE SPACES TO WS-Line
@@ -873,12 +964,9 @@
                PERFORM OUTPUT-LINE
            END-IF
 
-           MOVE "Experience:" TO WS-Line
-           PERFORM OUTPUT-LINE
-           IF PF-Exp-Count(WS-Display-Index) = 0
-               MOVE "  (none)" TO WS-Line
+           IF PF-Exp-Count(WS-Display-Index) > 0
+               MOVE "Experience:" TO WS-Line
                PERFORM OUTPUT-LINE
-           ELSE
                PERFORM VARYING COUNTER FROM 1 BY 1
                        UNTIL COUNTER > PF-Exp-Count(WS-Display-Index)
                    MOVE SPACES TO WS-Line
@@ -913,12 +1001,9 @@
                END-PERFORM
            END-IF
 
-           MOVE "Education:" TO WS-Line
-           PERFORM OUTPUT-LINE
-           IF PF-Edu-Count(WS-Display-Index) = 0
-               MOVE "  (none)" TO WS-Line
+           IF PF-Edu-Count(WS-Display-Index) > 0
+               MOVE "Education:" TO WS-Line
                PERFORM OUTPUT-LINE
-           ELSE
                PERFORM VARYING COUNTER FROM 1 BY 1
                        UNTIL COUNTER > PF-Edu-Count(WS-Display-Index)
                    MOVE SPACES TO WS-Line
@@ -944,8 +1029,9 @@
                END-PERFORM
            END-IF
 
-           MOVE "--------------------" TO WS-Line
+           MOVE "-------------------------" TO WS-Line
            PERFORM OUTPUT-LINE.
+
        VIEW-MY-PROFILE.
            PERFORM FIND-PROFILE-INDEX
            IF WS-Found-Index = 0
@@ -953,8 +1039,121 @@
                PERFORM OUTPUT-LINE
                EXIT PARAGRAPH
            END-IF
-           MOVE WS-Found-Index TO WS-Display-Index
-           PERFORM VIEW-PROFILE-BY-INDEX.
+           MOVE "--- User Profile ---" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Name: " DELIMITED BY SIZE
+                  FUNCTION TRIM(PF-FirstName(WS-Found-Index) TRAILING) DELIMITED BY SIZE
+                  " " DELIMITED BY SIZE
+                  FUNCTION TRIM(PF-LastName(WS-Found-Index) TRAILING)  DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "University: " DELIMITED BY SIZE
+                  FUNCTION TRIM(PF-University(WS-Found-Index) TRAILING) DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Major: " DELIMITED BY SIZE
+                  FUNCTION TRIM(PF-Major(WS-Found-Index) TRAILING) DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Graduation Year: " DELIMITED BY SIZE
+                  PF-GradYear(WS-Found-Index) DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           IF PF-About(WS-Found-Index) NOT = SPACES
+               MOVE SPACES TO WS-Line
+               STRING "About Me: " DELIMITED BY SIZE
+                      PF-About(WS-Found-Index) DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+           END-IF
+
+           MOVE "Experience:" TO WS-Line
+           PERFORM OUTPUT-LINE
+           IF PF-Exp-Count(WS-Found-Index) = 0
+               MOVE "  (none)" TO WS-Line
+               PERFORM OUTPUT-LINE
+           ELSE
+               PERFORM VARYING COUNTER FROM 1 BY 1
+                       UNTIL COUNTER > PF-Exp-Count(WS-Found-Index)
+                   MOVE SPACES TO WS-Line
+                   STRING "  Title: " DELIMITED BY SIZE
+                          PF-Exp-Title(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+
+                   MOVE SPACES TO WS-Line
+                   STRING "  Company: " DELIMITED BY SIZE
+                          PF-Exp-Company(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+
+                   MOVE SPACES TO WS-Line
+                   STRING "  Dates: " DELIMITED BY SIZE
+                          PF-Exp-Dates(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+
+                   IF PF-Exp-Desc(WS-Found-Index, COUNTER) NOT = SPACES
+                       MOVE SPACES TO WS-Line
+                       STRING "  Description: " DELIMITED BY SIZE
+                              PF-Exp-Desc(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                         INTO WS-Line
+                       END-STRING
+                       PERFORM OUTPUT-LINE
+                   END-IF
+               END-PERFORM
+           END-IF
+
+           MOVE "Education:" TO WS-Line
+           PERFORM OUTPUT-LINE
+           IF PF-Edu-Count(WS-Found-Index) = 0
+               MOVE "  (none)" TO WS-Line
+               PERFORM OUTPUT-LINE
+           ELSE
+               PERFORM VARYING COUNTER FROM 1 BY 1
+                       UNTIL COUNTER > PF-Edu-Count(WS-Found-Index)
+                   MOVE SPACES TO WS-Line
+                   STRING "  Degree: " DELIMITED BY SIZE
+                          PF-Edu-Degree(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+
+                   MOVE SPACES TO WS-Line
+                   STRING "  University: " DELIMITED BY SIZE
+                          PF-Edu-University(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+
+                   MOVE SPACES TO WS-Line
+                   STRING "  Years: " DELIMITED BY SIZE
+                          PF-Edu-Years(WS-Found-Index, COUNTER) DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+               END-PERFORM
+           END-IF
+
+           MOVE "--------------------" TO WS-Line
+           PERFORM OUTPUT-LINE.
 
        FIND-SOMEONE-YOU-KNOW.
            *> Prompt for full name (required)
@@ -991,12 +1190,108 @@
            END-PERFORM
 
            IF WS-Display-Index > 0
-               MOVE " --- Found User Profile --- " TO WS-Line
-               PERFORM OUTPUT-LINE
                PERFORM VIEW-PROFILE-BY-INDEX
+               PERFORM SHOW-CONNECTION-OPTIONS
            ELSE
                MOVE "No one by that name could be found." TO WS-Line
                PERFORM OUTPUT-LINE
+           END-IF.
+
+       SHOW-CONNECTION-OPTIONS.
+           MOVE "1. Send Connection Request" TO WS-Line
+           PERFORM OUTPUT-LINE
+           MOVE "2. Back to Main Menu" TO WS-Line
+           PERFORM OUTPUT-LINE
+           MOVE "Enter your choice:" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           PERFORM READ-INPUT
+
+           EVALUATE InputRecord
+               WHEN "Send Connection Request"
+                   PERFORM SEND-CONNECTION-REQUEST
+               WHEN "Back to Main Menu"
+                   CONTINUE
+               WHEN OTHER
+                   MOVE "Invalid choice." TO WS-Line
+                   PERFORM OUTPUT-LINE
+           END-EVALUATE.
+
+       SEND-CONNECTION-REQUEST.
+           *> Validate request: cannot send to self, already connected, or pending request exists
+           MOVE "Y" TO WS-Connection-Valid
+           MOVE "N" TO WS-Has-Pending
+
+           *> Check if trying to connect with self
+           IF PF-Username(WS-Display-Index) = WS-Current-Username
+               MOVE "You cannot send a connection request to yourself." TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "N" TO WS-Connection-Valid
+               EXIT PARAGRAPH
+           END-IF
+
+           *> Check for existing connection or pending request
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Connections
+               *> Check if already connected (status = CONNECTED)
+               IF (CN-From-Username(COUNTER) = WS-Current-Username
+                   AND CN-To-Username(COUNTER) = PF-Username(WS-Display-Index)
+                   AND CN-Status(COUNTER) = "CONNECTED")
+                OR (CN-From-Username(COUNTER) = PF-Username(WS-Display-Index)
+                   AND CN-To-Username(COUNTER) = WS-Current-Username
+                   AND CN-Status(COUNTER) = "CONNECTED")
+                   MOVE "You are already connected with this user." TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "N" TO WS-Connection-Valid
+                   EXIT PERFORM
+               END-IF
+
+               *> Check if the other user has already sent me a pending request
+               IF CN-From-Username(COUNTER) = PF-Username(WS-Display-Index)
+                  AND CN-To-Username(COUNTER) = WS-Current-Username
+                  AND CN-Status(COUNTER) = "PENDING"
+                   MOVE SPACES TO WS-Line
+                   STRING "This user has already sent you a connection request." DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+                   MOVE "N" TO WS-Connection-Valid
+                   EXIT PERFORM
+               END-IF
+
+               *> Check if I've already sent a pending request to them
+               IF CN-From-Username(COUNTER) = WS-Current-Username
+                  AND CN-To-Username(COUNTER) = PF-Username(WS-Display-Index)
+                  AND CN-Status(COUNTER) = "PENDING"
+                   MOVE "You have already sent a connection request to this user." TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "N" TO WS-Connection-Valid
+                   EXIT PERFORM
+               END-IF
+
+               ADD 1 TO COUNTER
+           END-PERFORM
+
+           *> If valid, add the connection request
+           IF Connection-Valid
+               IF WS-Number-Connections < 20
+                   ADD 1 TO WS-Number-Connections
+                   MOVE WS-Current-Username TO CN-From-Username(WS-Number-Connections)
+                   MOVE PF-Username(WS-Display-Index) TO CN-To-Username(WS-Number-Connections)
+                   MOVE "PENDING" TO CN-Status(WS-Number-Connections)
+                   MOVE SPACES TO WS-Line
+                   STRING "Connection request sent to " DELIMITED BY SIZE
+                          FUNCTION TRIM(PF-FirstName(WS-Display-Index) TRAILING) DELIMITED BY SIZE
+                          " " DELIMITED BY SIZE
+                          FUNCTION TRIM(PF-LastName(WS-Display-Index) TRAILING) DELIMITED BY SIZE
+                          "." DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+               ELSE
+                   MOVE "Connection storage limit reached." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
            END-IF.
 
        LEARN-SKILL-MENU.
