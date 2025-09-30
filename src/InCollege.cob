@@ -163,6 +163,10 @@
        01 WS-Display-Index     PIC 9 VALUE 0.
        01 WS-FullName-Build    PIC X(50).
 
+       01  WS-Tmp-Sender         PIC X(20) VALUE SPACES.
+       01  WS-Tmp-Recipient      PIC X(20) VALUE SPACES.
+       01  WS-Check-Flag         PIC X     VALUE "N".  *> 'Y' or 'N'
+
        PROCEDURE DIVISION.
            PERFORM MAIN.
            STOP RUN.
@@ -565,14 +569,16 @@
                ADD 1 TO COUNTER
            END-PERFORM.
        GET-FULLNAME-BY-USERNAME.
+           *> Input:  WS-Search-Target-User
+           *> Output: WS-FullName-Build (SPACES if not found)
            MOVE SPACES TO WS-FullName-Build
            MOVE 1 TO COUNTER
            PERFORM UNTIL COUNTER > WS-Number-Profiles
                IF PF-Username(COUNTER) = WS-Search-Target-User
                    STRING
-                       PF-FirstName(COUNTER) DELIMITED BY SPACE
-                       " "                     DELIMITED BY SIZE
-                       PF-LastName(COUNTER)   DELIMITED BY SPACE
+                       FUNCTION TRIM(PF-FirstName(COUNTER) TRAILING) DELIMITED BY SIZE
+                       " "                                           DELIMITED BY SIZE
+                       FUNCTION TRIM(PF-LastName(COUNTER) TRAILING)   DELIMITED BY SIZE
                     INTO WS-FullName-Build
                    END-STRING
                    EXIT PERFORM
@@ -1086,13 +1092,8 @@
 
                *> [Epic4] Remember target user for connection request
                MOVE PF-Username(WS-Display-Index) TO WS-Search-Target-User
-               MOVE SPACES TO WS-Search-Target-Fullname
-               STRING
-                   FUNCTION TRIM(PF-FirstName(WS-Display-Index) TRAILING) DELIMITED BY SIZE
-                   " "                                                   DELIMITED BY SIZE
-                   FUNCTION TRIM(PF-LastName(WS-Display-Index) TRAILING)  DELIMITED BY SIZE
-                INTO WS-Search-Target-Fullname
-               END-STRING
+               PERFORM GET-FULLNAME-BY-USERNAME
+               MOVE WS-FullName-Build TO WS-Search-Target-Fullname
 
                *> [Epic4] Offer to send a connection request
                MOVE "1. Send Connection Request" TO WS-Line
@@ -1124,10 +1125,10 @@
            END-IF
 
            *> Guard: cannot send to self
+           MOVE WS-Current-Username   TO WS-Tmp-Sender
+           MOVE WS-Search-Target-User TO WS-Tmp-Recipient
            PERFORM CANNOT-SEND-TO-SELF
-               USING WS-Current-Username WS-Search-Target-User
-               GIVING WS-ANS
-           IF WS-ANS = "Y"
+           IF WS-Check-Flag = "Y"
                MOVE "You cannot send a connection request to yourself." TO WS-Line
                PERFORM OUTPUT-LINE
                EXIT PARAGRAPH
@@ -1135,13 +1136,15 @@
 
            *> Guard: duplicate or cross-pending exists
            PERFORM REQUEST-EXISTS-BETWEEN
-               USING WS-Current-Username WS-Search-Target-User
-               GIVING WS-ANS
-           IF WS-ANS = "Y"
+           IF WS-Check-Flag = "Y"
                MOVE "A pending connection request already exists between you and " TO WS-Line
                PERFORM OUTPUT-LINE
-               IF WS-Search-Target-Fullname NOT = SPACES
-                   MOVE WS-Search-Target-Fullname TO WS-Line
+
+               *> build/display target name
+               MOVE WS-Search-Target-User TO WS-Search-Target-User  *> (no-op; ensures var set)
+               PERFORM GET-FULLNAME-BY-USERNAME
+               IF WS-FullName-Build NOT = SPACES
+                   MOVE WS-FullName-Build TO WS-Line
                ELSE
                    MOVE WS-Search-Target-User TO WS-Line
                END-IF
@@ -1160,10 +1163,11 @@
                PERFORM SAVE-REQUESTS
 
                *> Success message
-               IF WS-Search-Target-Fullname NOT = SPACES
+               PERFORM GET-FULLNAME-BY-USERNAME
+               IF WS-FullName-Build NOT = SPACES
                    STRING
                        "Connection request sent to " DELIMITED BY SIZE
-                       WS-Search-Target-Fullname    DELIMITED BY SIZE
+                       WS-FullName-Build            DELIMITED BY SIZE
                        "."                           DELIMITED BY SIZE
                     INTO WS-Line
                    END-STRING
@@ -1182,30 +1186,28 @@
            END-IF.
 
        CANNOT-SEND-TO-SELF.
-           *> USING sender recipient; GIVING Y if same, else N
-           PROCEDURE DIVISION USING BY REFERENCE WS-Username WS-Char
-                              GIVING WS-ANS.
-           MOVE "N" TO WS-ANS
-           IF WS-Username = WS-Char
-               MOVE "Y" TO WS-ANS
+           *> Input:  WS-Tmp-Sender, WS-Tmp-Recipient
+           *> Output: WS-Check-Flag ('Y' if same, else 'N')
+           MOVE "N" TO WS-Check-Flag
+           IF WS-Tmp-Sender = WS-Tmp-Recipient
+               MOVE "Y" TO WS-Check-Flag
            END-IF.
 
        REQUEST-EXISTS-BETWEEN.
-           *> USING sender recipient; GIVING Y if any pending exists either way
-           PROCEDURE DIVISION USING BY REFERENCE WS-Username WS-Char
-                              GIVING WS-ANS.
-           MOVE "N" TO WS-ANS
+           *> Input:  WS-Tmp-Sender, WS-Tmp-Recipient
+           *> Output: WS-Check-Flag ('Y' if a pending exists either way)
+           MOVE "N" TO WS-Check-Flag
            MOVE 1 TO COUNTER
-           PERFORM UNTIL COUNTER > WS-Num-Requests OR WS-ANS = "Y"
-               IF WR-Status(COUNTER) = CONST-PENDING
-                  AND (
-                       (WR-Sender(COUNTER)    = WS-Username AND
-                        WR-Recipient(COUNTER) = WS-Char)
-                       OR
-                       (WR-Sender(COUNTER)    = WS-Char AND
-                        WR-Recipient(COUNTER) = WS-Username)
-                      )
-                   MOVE "Y" TO WS-ANS
+           PERFORM UNTIL COUNTER > WS-Num-Requests OR WS-Check-Flag = "Y"
+               IF WR-Status(COUNTER) = CONST-PENDING AND
+                  (
+                     (WR-Sender(COUNTER)    = WS-Tmp-Sender AND
+                      WR-Recipient(COUNTER) = WS-Tmp-Recipient)
+                     OR
+                     (WR-Sender(COUNTER)    = WS-Tmp-Recipient AND
+                      WR-Recipient(COUNTER) = WS-Tmp-Sender)
+                  )
+                   MOVE "Y" TO WS-Check-Flag
                END-IF
                ADD 1 TO COUNTER
            END-PERFORM.
@@ -1214,8 +1216,6 @@
            MOVE "--- Pending Connection Requests ---" TO WS-Line
            PERFORM OUTPUT-LINE
 
-           MOVE 0 TO WS-Found-Index
-           MOVE 0 TO COUNTER
            MOVE 0 TO WS-Display-Index
 
            *> Scan requests for those sent TO current user and still pending
@@ -1223,10 +1223,11 @@
                IF WR-Recipient(COUNTER) = WS-Current-Username
                   AND WR-Status(COUNTER) = CONST-PENDING
                    ADD 1 TO WS-Display-Index
-                   *> Try to get sender's full name if profile exists
+
+                   *> Resolve sender's full name (if profile exists)
+                   MOVE WR-Sender(COUNTER) TO WS-Search-Target-User
                    PERFORM GET-FULLNAME-BY-USERNAME
-                       USING WR-Sender(COUNTER)
-                       GIVING WS-FullName-Build
+
                    IF WS-FullName-Build NOT = SPACES
                        MOVE WS-FullName-Build TO WS-Line
                    ELSE
