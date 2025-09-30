@@ -524,6 +524,8 @@
                PERFORM OUTPUT-LINE
                MOVE "Find someone you know" TO WS-Line
                PERFORM OUTPUT-LINE
+               MOVE "View My Pending Connection Requests" TO WS-Line
+               PERFORM OUTPUT-LINE
                MOVE "Learn a new skill" TO WS-Line
                PERFORM OUTPUT-LINE
                MOVE "Enter your choice:" TO WS-Line
@@ -542,6 +544,8 @@
                    WHEN "Find someone you know"
                        PERFORM FIND-SOMEONE-YOU-KNOW
                        PERFORM OUTPUT-LINE
+                   WHEN "View My Pending Connection Requests"
+                       PERFORM VIEW-PENDING-REQUESTS
                    WHEN "Learn a new skill"
                        PERFORM LEARN-SKILL-MENU
                    WHEN OTHER
@@ -556,6 +560,21 @@
            PERFORM UNTIL COUNTER > WS-Number-Profiles
                IF WS-Current-Username = PF-Username(COUNTER)
                    MOVE COUNTER TO WS-Found-Index
+                   EXIT PERFORM
+               END-IF
+               ADD 1 TO COUNTER
+           END-PERFORM.
+       GET-FULLNAME-BY-USERNAME.
+           MOVE SPACES TO WS-FullName-Build
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Profiles
+               IF PF-Username(COUNTER) = WS-Search-Target-User
+                   STRING
+                       PF-FirstName(COUNTER) DELIMITED BY SPACE
+                       " "                     DELIMITED BY SIZE
+                       PF-LastName(COUNTER)   DELIMITED BY SPACE
+                    INTO WS-FullName-Build
+                   END-STRING
                    EXIT PERFORM
                END-IF
                ADD 1 TO COUNTER
@@ -1066,6 +1085,37 @@
                PERFORM VIEW-PROFILE-BY-INDEX
            ELSE
                MOVE "No one by that name could be found." TO WS-Line
+               PERFORM OUTPUT-LINE
+           END-IF.
+
+       VIEW-PENDING-REQUESTS.
+           MOVE "--- Pending Connection Requests ---" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           MOVE 0 TO WS-Found-Index
+           MOVE 0 TO COUNTER
+           MOVE 0 TO WS-Display-Index
+
+           *> Scan requests for those sent TO current user and still pending
+           PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Num-Requests
+               IF WR-Recipient(COUNTER) = WS-Current-Username
+                  AND WR-Status(COUNTER) = CONST-PENDING
+                   ADD 1 TO WS-Display-Index
+                   *> Try to get sender's full name if profile exists
+                   PERFORM GET-FULLNAME-BY-USERNAME
+                       USING WR-Sender(COUNTER)
+                       GIVING WS-FullName-Build
+                   IF WS-FullName-Build NOT = SPACES
+                       MOVE WS-FullName-Build TO WS-Line
+                   ELSE
+                       MOVE WR-Sender(COUNTER) TO WS-Line
+                   END-IF
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
+
+           IF WS-Display-Index = 0
+               MOVE "You have no pending connection requests at this time." TO WS-Line
                PERFORM OUTPUT-LINE
            END-IF.
 
