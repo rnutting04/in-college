@@ -1083,8 +1083,101 @@
                MOVE " --- Found User Profile --- " TO WS-Line
                PERFORM OUTPUT-LINE
                PERFORM VIEW-PROFILE-BY-INDEX
+
+               *> [Epic4] Remember target user for connection request
+               MOVE PF-Username(WS-Display-Index) TO WS-Search-Target-User
+               MOVE SPACES TO WS-Search-Target-Fullname
+               STRING
+                   FUNCTION TRIM(PF-FirstName(WS-Display-Index) TRAILING) DELIMITED BY SIZE
+                   " "                                                   DELIMITED BY SIZE
+                   FUNCTION TRIM(PF-LastName(WS-Display-Index) TRAILING)  DELIMITED BY SIZE
+                INTO WS-Search-Target-Fullname
+               END-STRING
+
+               *> [Epic4] Offer to send a connection request
+               MOVE "1. Send Connection Request" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "2. Back to Main Menu" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Enter your choice:" TO WS-Line
+               PERFORM OUTPUT-LINE
+
+               PERFORM READ-INPUT
+
+               EVALUATE InputRecord
+                   WHEN "1"
+                       PERFORM SEND-CONNECTION-REQUEST
+                   WHEN OTHER
+                       CONTINUE
+               END-EVALUATE
            ELSE
                MOVE "No one by that name could be found." TO WS-Line
+               PERFORM OUTPUT-LINE
+           END-IF.
+
+       SEND-CONNECTION-REQUEST.
+           *> Guard: target must exist
+           IF WS-Search-Target-User = SPACES
+               MOVE "No target user selected." TO WS-Line
+               PERFORM OUTPUT-LINE
+               EXIT PARAGRAPH
+           END-IF
+
+           *> Guard: cannot send to self
+           PERFORM CANNOT-SEND-TO-SELF
+               USING WS-Current-Username WS-Search-Target-User
+               GIVING WS-ANS
+           IF WS-ANS = "Y"
+               MOVE "You cannot send a connection request to yourself." TO WS-Line
+               PERFORM OUTPUT-LINE
+               EXIT PARAGRAPH
+           END-IF
+
+           *> Guard: duplicate or cross-pending exists
+           PERFORM REQUEST-EXISTS-BETWEEN
+               USING WS-Current-Username WS-Search-Target-User
+               GIVING WS-ANS
+           IF WS-ANS = "Y"
+               MOVE "A pending connection request already exists between you and " TO WS-Line
+               PERFORM OUTPUT-LINE
+               IF WS-Search-Target-Fullname NOT = SPACES
+                   MOVE WS-Search-Target-Fullname TO WS-Line
+               ELSE
+                   MOVE WS-Search-Target-User TO WS-Line
+               END-IF
+               PERFORM OUTPUT-LINE
+               EXIT PARAGRAPH
+           END-IF
+
+           *> Append new request
+           IF WS-Num-Requests < 50
+               ADD 1 TO WS-Num-Requests
+               MOVE WS-Current-Username   TO WR-Sender(WS-Num-Requests)
+               MOVE WS-Search-Target-User TO WR-Recipient(WS-Num-Requests)
+               MOVE CONST-PENDING         TO WR-Status(WS-Num-Requests)
+
+               *> Durability: save now
+               PERFORM SAVE-REQUESTS
+
+               *> Success message
+               IF WS-Search-Target-Fullname NOT = SPACES
+                   STRING
+                       "Connection request sent to " DELIMITED BY SIZE
+                       WS-Search-Target-Fullname    DELIMITED BY SIZE
+                       "."                           DELIMITED BY SIZE
+                    INTO WS-Line
+                   END-STRING
+               ELSE
+                   STRING
+                       "Connection request sent to " DELIMITED BY SIZE
+                       WS-Search-Target-User        DELIMITED BY SPACE
+                       "."                           DELIMITED BY SIZE
+                    INTO WS-Line
+                   END-STRING
+               END-IF
+               PERFORM OUTPUT-LINE
+           ELSE
+               MOVE "Cannot send request: request storage is full." TO WS-Line
                PERFORM OUTPUT-LINE
            END-IF.
 
