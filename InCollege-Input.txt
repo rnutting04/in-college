@@ -1,13 +1,4 @@
 Log In
-test1
-Passw0rd!
-View My Profile
-Find someone you know
-Another Student
-Find someone you know
-Verylongfirstname Verylonglastname
-Find someone you know
-Verylongfirstnameverylongfirstname Verylonglastnameverylonglastname
-Find someone you know
-Fake Nonexistent
-
+user1
+Password!1
+View My Pending Connection Requests

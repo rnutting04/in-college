@@ -1,5 +1,4 @@
+user1               Password!1
 test1               Passw0rd!
-test2               Passw0rd!
-testlong            Passw0rd!
-testnum1            Passw0rd!
-testnum2            Passw0rd!
+testlong            Password@2
+testnum2            Password1!

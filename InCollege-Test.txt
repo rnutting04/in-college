@@ -1,19 +1,13 @@
-Create New Account
-bob
-Password1!
+P.S.: --- means start a new test inputting the text from empty input file
+---
 Log In
-bob
-WrongPass
-wronguser
-Password1!
-bob
-Password1!
-Search for a job
+test1
+Passw0rd!
 Find someone you know
-Learn a new skill
-Write resume
-Mock interview tips
-Reccomended certifications
-Volunteer oportunities
-Data Analysis
-Go Back
+Bob Marley
+1
+---
+Log In
+user1
+Password!1
+View My Pending Connection Requests
