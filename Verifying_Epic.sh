@@ -10,6 +10,7 @@
 # This command will run test cases 2 through 5 from Epic 4.
 
 # IMPORTANT: TEST CASES MUST BE NAMED "test_#" OR ELSE THE SCRIPT WON'T WORK.
+# FOLDER UNDER "tests" MUST BE NAMED "tests_epic_#".
 
 # Compile InCollege
 mkdir -p bin && cobc -x -free -o bin/InCollege /workspace/src/InCollege.cob
