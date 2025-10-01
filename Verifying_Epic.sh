@@ -9,16 +9,22 @@
 # ./Verifying_Epic.sh 4 2 5
 # This command will run test cases 2 through 5 from Epic 4.
 
+# By default, the Users and Profiles files will not be reset. To
+# explicitly reset them, add "r" to the end of the command:
+# ./Verifying_Epic.sh 4 2 5 r
+
 # IMPORTANT: TEST CASES MUST BE NAMED "test_#" OR ELSE THE SCRIPT WON'T WORK.
 # FOLDER UNDER "tests" MUST BE NAMED "tests_epic_#".
 
 # Compile InCollege
 mkdir -p bin && cobc -x -free -o bin/InCollege /workspace/src/InCollege.cob
 
-# Reset the Users and Profiles file
-rm -f InCollege-Users.txt
-rm -f InCollege-Profiles.txt
-touch InCollege-Profiles.txt
+# Reset the Users and Profiles file if the user specified it with "r"
+if [ "$4" = "r" ]; then
+    rm -f InCollege-Users.txt
+    rm -f InCollege-Profiles.txt
+    touch InCollege-Profiles.txt
+fi
 
 # Create a folder for the output files if it doesn't exist.
 mkdir -p tests/tests_epic_${1}/output_each
