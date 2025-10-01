@@ -1,3 +1,3 @@
-NewStudent          TestUser          PENDING
-NewStudent          NewStudent          PENDING
-test1               testnum2            PENDING
+Michael42           Sophie19            PENDING
+Sophie19            Daniel85            PENDING
+Emily23             Jason77             PENDING
