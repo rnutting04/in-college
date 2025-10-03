@@ -5,64 +5,21 @@ Enter your choice:
 Please enter your username:
 Please enter your password:
 You have successfully logged in.
-Welcome, Emily23!
+Welcome, Daniel85!
 1. View My Profile
 2. Search for User
 3. Learn a New Skill
 4. View My Pending Connection Requests
+5. View My Network
 Enter your choice:
---- Pending Connection Requests ---
-You have no pending connection requests at this time.
------------------------------------
+--- Your Network ---
+Connected with: Sophie Martin (University: Boston University, Major: Data Science)
+Connected with: Emily Rodriguez (University: University of Texas at Austin, Major: Business Administ
+Connected with: Jason Thompson (University: Ohio State University, Major: Biology)
+--------------------
 1. View My Profile
 2. Search for User
 3. Learn a New Skill
 4. View My Pending Connection Requests
-Enter your choice:
-Enter the full name of the person you are looking for:
---- Found User Profile ---
-Name: Emily Rodriguez
-University: University of Texas at Austin
-Major: Business Administration
-Graduation Year: 2026
-About Me: Driven student leader interested in entrepreneurship and global business strategy.
-Education:
-  Degree: B.B.A. in Business Administrat
-  University: University of Texas at Austin
-  Years: 2022-2026
--------------------------
-1. Send Connection Request
-2. Back to Main Menu
-Enter your choice:
-You cannot send a connection request to yourself.
-1. View My Profile
-2. Search for User
-3. Learn a New Skill
-4. View My Pending Connection Requests
-Enter your choice:
-Enter the full name of the person you are looking for:
---- Found User Profile ---
-Name: Jason Thompson
-University: Ohio State University
-Major: Biology
-Graduation Year: 2022
-About Me: Passionate about environmental conservation and wildlife research.
-Experience:
-  Title: Research Assistant
-  Company: Wildlife Conservation Center
-  Dates: 2021-2022
-  Description: Conducted field surveys and assisted with data collection on local species.
-Education:
-  Degree: B.S. in Biology
-  University: Ohio State University
-  Years: 2018-2022
--------------------------
-1. Send Connection Request
-2. Back to Main Menu
-Enter your choice:
-You have already sent a connection request to this user.
-1. View My Profile
-2. Search for User
-3. Learn a New Skill
-4. View My Pending Connection Requests
+5. View My Network
 Enter your choice:

@@ -25,6 +25,11 @@
                ACCESS IS SEQUENTIAL
                FILE STATUS IS WS-Connections-Status.
 
+           SELECT ActiveConnsFile ASSIGN TO "InCollege-ActiveConns.txt"
+               ORGANIZATION IS LINE SEQUENTIAL
+               ACCESS IS SEQUENTIAL
+               FILE STATUS IS WS-ActiveConns-Status.
+
        DATA DIVISION.
        FILE SECTION.
        FD  InputFile.
@@ -63,6 +68,10 @@
            05 CR-From-Username         PIC X(20).
            05 CR-To-Username           PIC X(20).
            05 CR-Status                PIC X(10).
+       FD  ActiveConnsFile.
+       01  ActiveConnRecord.
+           05 ACR-User1                PIC X(20).
+           05 ACR-User2                PIC X(20).
 
        WORKING-STORAGE SECTION.
 
@@ -70,6 +79,7 @@
        01 WS-Users-Status     PIC XX VALUE "00".
        01 WS-Profiles-Status  PIC XX VALUE "00".
        01 WS-Connections-Status PIC XX VALUE "00".
+       01 WS-ActiveConns-Status PIC XX VALUE "00".
        *>-------
        01 WS-EOF-Flag                  PIC X VALUE "N".
            88 EOF                      VALUE "Y".
@@ -158,6 +168,22 @@
        01 WS-Has-Pending               PIC X VALUE "N".
            88 Has-Pending              VALUE "Y".
 
+       *> For established connections
+       01 WS-Number-Active-Conns       PIC 99 VALUE 0.
+       01 WS-Active-Conn-Table.
+           05 WS-Active-Conn OCCURS 20 TIMES.
+              10 AC-User1              PIC X(20).
+              10 AC-User2              PIC X(20).
+
+       *> Temporary table for processing connection request deletions
+       01 WS-Temp-Number-Connections   PIC 99 VALUE 0.
+       01 WS-Temp-Connection-Table.
+           05 WS-Temp-Connection OCCURS 20 TIMES.
+              10 Temp-CN-From-Username PIC X(20).
+              10 Temp-CN-To-Username   PIC X(20).
+              10 Temp-CN-Status        PIC X(10).
+
+
        PROCEDURE DIVISION.
            PERFORM MAIN.
            STOP RUN.
@@ -169,6 +195,7 @@
            PERFORM LOAD-USERS
            PERFORM LOAD-PROFILES
            PERFORM LOAD-CONNECTIONS
+           PERFORM LOAD-ACTIVE-CONNS
 
            PERFORM UNTIL EOF-Input
                PERFORM MAIN-MENU
@@ -177,6 +204,7 @@
            PERFORM SAVE-USERS
            PERFORM SAVE-PROFILES
            PERFORM SAVE-CONNECTIONS
+           PERFORM SAVE-ACTIVE-CONNS
 
            CLOSE InputFile
            CLOSE OutputFile
@@ -306,6 +334,41 @@
            END-PERFORM
            CLOSE ConnectionsFile.
 
+
+       LOAD-ACTIVE-CONNS.
+           MOVE "00" TO WS-ActiveConns-Status
+           OPEN INPUT ActiveConnsFile
+           IF WS-ActiveConns-Status = "35"
+               OPEN OUTPUT ActiveConnsFile
+               CLOSE ActiveConnsFile
+               OPEN INPUT ActiveConnsFile
+           END-IF
+
+           MOVE 0 TO WS-Number-Active-Conns
+           MOVE "N" TO WS-EOF-Flag
+           PERFORM UNTIL WS-Number-Active-Conns = 20 OR EOF
+               READ ActiveConnsFile INTO ActiveConnRecord
+                   AT END SET EOF TO TRUE
+                   NOT AT END
+                       ADD 1 TO WS-Number-Active-Conns
+                       MOVE ACR-User1 TO AC-User1(WS-Number-Active-Conns)
+                       MOVE ACR-User2 TO AC-User2(WS-Number-Active-Conns)
+               END-READ
+           END-PERFORM
+           CLOSE ActiveConnsFile
+           MOVE "N" TO WS-EOF-Flag.
+
+       SAVE-ACTIVE-CONNS.
+           OPEN OUTPUT ActiveConnsFile
+           PERFORM VARYING COUNTER FROM 1 BY 1
+                   UNTIL COUNTER > WS-Number-Active-Conns
+               MOVE AC-User1(COUNTER) TO ACR-User1
+               MOVE AC-User2(COUNTER) TO ACR-User2
+               WRITE ActiveConnRecord
+           END-PERFORM
+           CLOSE ActiveConnsFile.
+
+
            MAIN-MENU.
                PERFORM UNTIL EOF-Input
                        OR InputRecord = "Create New Account"
@@ -356,6 +419,7 @@
                        PERFORM SAVE-USERS
                        PERFORM SAVE-PROFILES
                        PERFORM SAVE-CONNECTIONS
+                       PERFORM SAVE-ACTIVE-CONNS
                        CLOSE InputFile
                        CLOSE OutputFile
                        STOP RUN
@@ -516,6 +580,8 @@
                PERFORM OUTPUT-LINE
                MOVE "4. View My Pending Connection Requests" TO WS-Line
                PERFORM OUTPUT-LINE
+               MOVE "5. View My Network" TO WS-Line
+               PERFORM OUTPUT-LINE
                MOVE "Enter your choice:" TO WS-Line
                PERFORM OUTPUT-LINE
 
@@ -536,40 +602,109 @@
                    WHEN "Learn a new skill"
                        PERFORM LEARN-SKILL-MENU
                    WHEN "View My Pending Connection Requests"
-                       PERFORM VIEW-PENDING-REQUESTS
+                       PERFORM MANAGE-PENDING-REQUESTS
+                   WHEN "View My Network"
+                       PERFORM VIEW-MY-NETWORK
                    WHEN OTHER
                        MOVE "Invalid choice. Please try again." TO WS-Line
                        PERFORM OUTPUT-LINE
                END-EVALUATE
            END-PERFORM.
 
-       VIEW-PENDING-REQUESTS.
+       MANAGE-PENDING-REQUESTS.
            MOVE "--- Pending Connection Requests ---" TO WS-Line
            PERFORM OUTPUT-LINE
 
-           MOVE 0 TO COUNTER
-           MOVE 1 TO WS-Found-Index
-           PERFORM UNTIL WS-Found-Index > WS-Number-Connections
-               IF CN-To-Username(WS-Found-Index) = WS-Current-Username
-                  AND CN-Status(WS-Found-Index) = "PENDING"
-                   ADD 1 TO COUNTER
-                   MOVE SPACES TO WS-Line
-                   STRING "A connection request from " DELIMITED BY SIZE
-                          FUNCTION TRIM(CN-From-Username(WS-Found-Index) TRAILING) DELIMITED BY SIZE
-                     INTO WS-Line
-                   END-STRING
-                   PERFORM OUTPUT-LINE
+           MOVE "N" TO WS-Has-Pending
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Connections
+               IF CN-To-Username(COUNTER) = WS-Current-Username AND
+                  CN-Status(COUNTER) = "PENDING"
+                   SET Has-Pending TO TRUE
+                   PERFORM PROCESS-SINGLE-REQUEST
                END-IF
-               ADD 1 TO WS-Found-Index
+               ADD 1 TO COUNTER
            END-PERFORM
 
-           IF COUNTER = 0
-               MOVE "You have no pending connection requests at this time." TO WS-Line
+           IF NOT Has-Pending
+               MOVE "You have no pending connection requests at this time."
+                   TO WS-Line
                PERFORM OUTPUT-LINE
+           ELSE
+               PERFORM CLEANUP-HANDLED-REQUESTS
            END-IF
 
            MOVE "-----------------------------------" TO WS-Line
            PERFORM OUTPUT-LINE.
+
+       PROCESS-SINGLE-REQUEST.
+           MOVE SPACES TO WS-Line
+           STRING "Request from: " DELIMITED BY SIZE
+                  FUNCTION TRIM(CN-From-Username(COUNTER) TRAILING)
+                     DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE "1. Accept" TO WS-Line
+           PERFORM OUTPUT-LINE
+           MOVE "2. Reject" TO WS-Line
+           PERFORM OUTPUT-LINE
+           STRING "Enter your choice for " DELIMITED BY SIZE
+                  FUNCTION TRIM(CN-From-Username(COUNTER) TRAILING)
+                     DELIMITED BY SIZE
+                  ":" DELIMITED BY SIZE
+             INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           PERFORM READ-INPUT
+           EVALUATE InputRecord
+               WHEN "Accept"
+                   ADD 1 TO WS-Number-Active-Conns
+                   MOVE CN-From-Username(COUNTER)
+                       TO AC-User1(WS-Number-Active-Conns)
+                   MOVE CN-To-Username(COUNTER)
+                       TO AC-User2(WS-Number-Active-Conns)
+
+                   MOVE "ACCEPTED" TO CN-Status(COUNTER)
+                   MOVE SPACES TO WS-Line
+                   STRING "Connection request from " DELIMITED BY SIZE
+                          FUNCTION TRIM(CN-From-Username(COUNTER))
+                          " accepted!" DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+
+               WHEN "Reject"
+                   MOVE "REJECTED" TO CN-Status(COUNTER)
+                   MOVE SPACES TO WS-Line
+                   STRING "Connection request from " DELIMITED BY SIZE
+                          FUNCTION TRIM(CN-From-Username(COUNTER))
+                          " rejected." DELIMITED BY SIZE
+                     INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+
+               WHEN OTHER
+                   MOVE "Invalid choice. Request ignored." TO WS-Line
+                   PERFORM OUTPUT-LINE
+           END-EVALUATE.
+
+       CLEANUP-HANDLED-REQUESTS.
+           MOVE 0 TO WS-Temp-Number-Connections
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Connections
+               IF CN-Status(COUNTER) = "PENDING"
+                   ADD 1 TO WS-Temp-Number-Connections
+                   MOVE WS-Connection(COUNTER) TO
+                       WS-Temp-Connection(WS-Temp-Number-Connections)
+               END-IF
+               ADD 1 TO COUNTER
+           END-PERFORM
+
+           MOVE WS-Temp-Number-Connections TO WS-Number-Connections
+           MOVE WS-Temp-Connection-Table TO WS-Connection-Table.
 
        FIND-PROFILE-INDEX.
            MOVE 0 TO WS-Found-Index
@@ -1328,3 +1463,63 @@
                        PERFORM OUTPUT-LINE
                END-EVALUATE
            END-PERFORM.
+
+       VIEW-MY-NETWORK.
+           MOVE "--- Your Network ---" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           MOVE "N" TO WS-Has-Pending *> Re-using flag for "has connections"
+
+           PERFORM VARYING WS-Found-Index FROM 1 BY 1
+               UNTIL WS-Found-Index > WS-Number-Active-Conns
+
+               *> Check if the current user is in the FIRST column (AC-User1)
+               IF AC-User1(WS-Found-Index) = WS-Current-Username
+                   MOVE AC-User2(WS-Found-Index) TO WS-Temp-Username
+                   SET Has-Pending TO TRUE
+                   PERFORM DISPLAY-CONNECTION-DETAILS
+               END-IF
+
+               *> Check if the current user is in the SECOND column (AC-User2)
+               IF AC-User2(WS-Found-Index) = WS-Current-Username
+                   MOVE AC-User1(WS-Found-Index) TO WS-Temp-Username
+                   SET Has-Pending TO TRUE
+                   PERFORM DISPLAY-CONNECTION-DETAILS
+               END-IF
+           END-PERFORM
+
+           IF NOT Has-Pending
+               MOVE "You have no connections in your network." TO WS-Line
+               PERFORM OUTPUT-LINE
+           END-IF
+
+           MOVE "--------------------" TO WS-Line
+           PERFORM OUTPUT-LINE.
+
+       DISPLAY-CONNECTION-DETAILS.
+           MOVE 0 TO WS-Display-Index
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Profiles
+               IF PF-Username(COUNTER) = WS-Temp-Username
+                   MOVE COUNTER TO WS-Display-Index
+                   EXIT PERFORM
+               END-IF
+               ADD 1 TO COUNTER
+           END-PERFORM
+
+           IF WS-Display-Index > 0
+               MOVE SPACES TO WS-Line
+               STRING "Connected with: " DELIMITED BY SIZE
+                 FUNCTION TRIM(PF-FirstName(WS-Display-Index))
+                 " " DELIMITED BY SIZE
+                 FUNCTION TRIM(PF-LastName(WS-Display-Index))
+                 " (University: " DELIMITED BY SIZE
+                 FUNCTION TRIM(PF-University(WS-Display-Index))
+                 ", Major: " DELIMITED BY SIZE
+                 FUNCTION TRIM(PF-Major(WS-Display-Index))
+                 ")" DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+
+           END-IF.
