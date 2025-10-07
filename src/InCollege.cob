@@ -627,11 +627,12 @@
            END-PERFORM
 
            IF NOT Has-Pending
-               MOVE "You have no pending connection requests at this time."
-                   TO WS-Line
+               MOVE "You have no pending connection requests at this time." TO WS-Line
                PERFORM OUTPUT-LINE
            ELSE
                PERFORM CLEANUP-HANDLED-REQUESTS
+               PERFORM SAVE-CONNECTIONS
+               PERFORM SAVE-ACTIVE-CONNS
            END-IF
 
            MOVE "-----------------------------------" TO WS-Line
@@ -1365,21 +1366,15 @@
                EXIT PARAGRAPH
            END-IF
 
+           PERFORM CHECK-ALREADY-CONNECTED
+           IF NOT Connection-Valid
+               EXIT PARAGRAPH
+           END-IF
+
+
            *> Check for existing connection or pending request
            MOVE 1 TO COUNTER
            PERFORM UNTIL COUNTER > WS-Number-Connections
-               *> Check if already connected (status = CONNECTED)
-               IF (CN-From-Username(COUNTER) = WS-Current-Username
-                   AND CN-To-Username(COUNTER) = PF-Username(WS-Display-Index)
-                   AND CN-Status(COUNTER) = "CONNECTED")
-                OR (CN-From-Username(COUNTER) = PF-Username(WS-Display-Index)
-                   AND CN-To-Username(COUNTER) = WS-Current-Username
-                   AND CN-Status(COUNTER) = "CONNECTED")
-                   MOVE "You are already connected with this user." TO WS-Line
-                   PERFORM OUTPUT-LINE
-                   MOVE "N" TO WS-Connection-Valid
-                   EXIT PERFORM
-               END-IF
 
                *> Check if the other user has already sent me a pending request
                IF CN-From-Username(COUNTER) = PF-Username(WS-Display-Index)
@@ -1428,6 +1423,21 @@
                    PERFORM OUTPUT-LINE
                END-IF
            END-IF.
+
+       CHECK-ALREADY-CONNECTED.
+          MOVE 1 TO COUNTER
+          PERFORM UNTIL COUNTER > WS-Number-Active-Conns
+              IF (AC-User1(COUNTER) = WS-Current-Username AND
+                  AC-User2(COUNTER) = PF-Username(WS-Display-Index))
+               OR (AC-User2(COUNTER) = WS-Current-Username AND
+                  AC-User1(COUNTER) = PF-Username(WS-Display-Index))
+                  MOVE "You are already connected with this user." TO WS-Line
+                  PERFORM OUTPUT-LINE
+                  MOVE "N" TO WS-Connection-Valid
+                  EXIT PERFORM
+              END-IF
+              ADD 1 TO COUNTER
+          END-PERFORM.
 
        LEARN-SKILL-MENU.
            PERFORM UNTIL EOF-Input
