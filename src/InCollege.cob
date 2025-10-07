@@ -33,9 +33,9 @@
        DATA DIVISION.
        FILE SECTION.
        FD  InputFile.
-       01  InputRecord                 PIC X(100).
+       01  InputRecord                 PIC X(200).
        FD  OutputFile.
-       01  OutputRecord                PIC X(100).
+       01  OutputRecord                PIC X(200).
 
        FD  UsersFile.
        01  UserRecord.
@@ -93,7 +93,7 @@
               10 WS-Username           PIC X(20).
               10 WS-Password           PIC X(12).
 
-       01 WS-Line                      PIC X(100).
+       01 WS-Line                      PIC X(200).
        01 COUNTER                      PIC 9(2) VALUE 0.
        01 Input-Username               PIC X(20).
        01 Input-Password               PIC X(12).
