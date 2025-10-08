@@ -26,6 +26,8 @@ if [ "$4" = "r" ]; then
     touch InCollege-Profiles.txt
     rm -f InCollege-Connections.txt
     touch InCollege-Connections.txt
+    rm -f InCollege-ActiveConns.txt
+    touch InCollege-ActiveConns.txt
 fi
 
 # Create a folder for the output files if it doesn't exist.
