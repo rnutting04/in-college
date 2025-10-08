@@ -1,0 +1,39 @@
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, bob!
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+Enter your choice:
+--- Pending Connection Requests ---
+Request from: steve
+1. Accept
+2. Reject
+Enter your choice for steve:
+Connection request from steve accepted!
+Request from: tim
+1. Accept
+2. Reject
+Enter your choice for tim:
+Connection request from tim rejected.
+-----------------------------------
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+Enter your choice:
+Invalid choice. Please try again.
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+Enter your choice:

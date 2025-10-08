@@ -1,0 +1,53 @@
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Enter new username
+Enter new password
+Password must be 8-12 characters with at least one uppercase letter, one digit, and one special character.
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, tim!
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+Enter your choice:
+ --- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, blank to skip):
+Add an experience? (Y/N)
+Add an education entry? (Y/N)
+Profile saved successfully!
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+Enter your choice:
+--- User Profile ---
+Name: tim example
+University: UF
+Major: CS
+Graduation Year: 2025
+Experience:
+  (none)
+Education:
+  (none)
+--------------------
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+Enter your choice:
