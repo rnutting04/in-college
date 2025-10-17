@@ -81,7 +81,7 @@
        FD  JobsFile.
        01  JobRecord.
            05 JR-Title                 PIC X(30).
-           05 JR-Desc                  PIC X(30).
+           05 JR-Desc                  PIC X(200).
            05 JR-Emp-Name              PIC X(30).
            05 JR-Location              PIC X(30).
            05 JR-Salary                PIC X(30).
