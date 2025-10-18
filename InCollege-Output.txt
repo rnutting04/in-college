@@ -5,7 +5,7 @@ Enter your choice:
 Please enter your username:
 Please enter your password:
 You have successfully logged in.
-Welcome, Michael42!
+Welcome, Sophie19!
 1. View My Profile
 2. Search for User
 3. Learn a New Skill

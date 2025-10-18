@@ -219,6 +219,7 @@
            PERFORM LOAD-PROFILES
            PERFORM LOAD-CONNECTIONS
            PERFORM LOAD-ACTIVE-CONNS
+           PERFORM LOAD-JOBS
 
            PERFORM UNTIL EOF-Input
                PERFORM MAIN-MENU
@@ -391,6 +392,33 @@
                WRITE ActiveConnRecord
            END-PERFORM
            CLOSE ActiveConnsFile.
+
+       LOAD-JOBS.
+           MOVE "00" TO WS-Jobs-Status
+           OPEN INPUT JobsFile
+           IF WS-Jobs-Status = "35"
+               *> File missing — create it empty, then reopen for input
+               OPEN OUTPUT JobsFile
+               CLOSE JobsFile
+               OPEN INPUT JobsFile
+           END-IF
+
+           MOVE 0 TO WS-Number-Jobs
+           MOVE "N" TO WS-EOF-Flag
+           PERFORM UNTIL WS-Number-Jobs = 3 OR EOF
+               READ JobsFile INTO JobRecord
+                   AT END SET EOF TO TRUE
+                   NOT AT END
+                       ADD 1 TO WS-Number-Jobs
+                       MOVE JR-Title     TO JB-Title(WS-Number-Jobs)
+                       MOVE JR-Desc      TO JB-Desc(WS-Number-Jobs)
+                       MOVE JR-Emp-Name  TO JB-Emp-Name(WS-Number-Jobs)
+                       MOVE JR-Location  TO JB-Location(WS-Number-Jobs)
+                       MOVE JR-Salary    TO JB-Salary(WS-Number-Jobs)
+               END-READ
+           END-PERFORM
+           CLOSE JobsFile
+           MOVE "N" TO WS-EOF-Flag.
 
        SAVE-JOBS.
            OPEN OUTPUT JobsFile
@@ -1684,7 +1712,5 @@
            END-PERFORM
            MOVE SPACES TO JB-Salary(WS-Found-Index)
            MOVE WS-INPUT-TRIM(1:30) TO JB-Salary(WS-Found-Index)
-
-           ADD 1 TO WS-Number-Jobs
            MOVE "Job posted successfully!" TO WS-Line
            PERFORM OUTPUT-LINE.
