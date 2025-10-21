@@ -1,0 +1,31 @@
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, Sophie19!
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+Enter your choice:
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice:
+--- Post a New Job/Internship ---
+Enter Job Title:
+Enter Description (max 200 chars):
+Enter Employer Name:
+Enter Location:
+Enter Salary (optional, enter 'NONE' to skip):
+Job posted successfully!
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice:  
