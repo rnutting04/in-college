@@ -647,6 +647,10 @@
                PERFORM OUTPUT-LINE
                MOVE "5. View My Network" TO WS-Line
                PERFORM OUTPUT-LINE
+               MOVE "6. Find someone you know" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "7. Search for a job" TO WS-Line
+               PERFORM OUTPUT-LINE
                MOVE "Enter your choice:" TO WS-Line
                PERFORM OUTPUT-LINE
 
