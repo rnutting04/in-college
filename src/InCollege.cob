@@ -80,6 +80,7 @@
 
        FD  JobsFile.
        01  JobRecord.
+           05 JR-ID                    PIC 9(3).
            05 JR-Title                 PIC X(30).
            05 JR-Desc                  PIC X(200).
            05 JR-Emp-Name              PIC X(30).
@@ -201,11 +202,14 @@
        01 WS-Number-Jobs           PIC 9 VALUE 0.
        01 WS-Job-Table.
            05 WS-Job OCCURS 3 TIMES.
+               10 JB-ID            PIC 9(3).
                10 JB-Title         PIC X(30).
                10 JB-Desc          PIC X(200).
                10 JB-Emp-Name      PIC X(30).
                10 JB-Location      PIC X(30).
                10 JB-Salary        PIC X(30).
+
+       01 WS-Max-Job-ID              PIC 9(3) VALUE 0.
 
        PROCEDURE DIVISION.
            PERFORM MAIN.
@@ -410,11 +414,16 @@
                    AT END SET EOF TO TRUE
                    NOT AT END
                        ADD 1 TO WS-Number-Jobs
+                       MOVE JR-ID        TO JB-ID(WS-Number-Jobs)
                        MOVE JR-Title     TO JB-Title(WS-Number-Jobs)
                        MOVE JR-Desc      TO JB-Desc(WS-Number-Jobs)
                        MOVE JR-Emp-Name  TO JB-Emp-Name(WS-Number-Jobs)
                        MOVE JR-Location  TO JB-Location(WS-Number-Jobs)
                        MOVE JR-Salary    TO JB-Salary(WS-Number-Jobs)
+                       *> Make sure each Id is unique
+                       IF JR-ID > WS-Max-Job-ID
+                       MOVE JR-ID TO WS-Max-Job-ID
+                       END-IF
                END-READ
            END-PERFORM
            CLOSE JobsFile
@@ -423,6 +432,7 @@
        SAVE-JOBS.
            OPEN OUTPUT JobsFile
            PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Number-Jobs
+               MOVE JB-ID(COUNTER)         TO JR-ID
                MOVE JB-Title(COUNTER)      TO JR-Title
                MOVE JB-Desc(COUNTER)       TO JR-Desc
                MOVE JB-Emp-Name(COUNTER)   TO JR-Emp-Name
@@ -1636,6 +1646,9 @@
 
            ADD 1 TO WS-Number-Jobs
            MOVE WS-Number-Jobs TO WS-Found-Index
+
+           ADD 1 TO WS-Max-Job-ID.
+           MOVE WS-Max-Job-ID TO JB-ID(WS-Found-Index).
 
            *> -------- Job Title (X(30)) [REQUIRED] --------
            MOVE SPACES TO WS-INPUT-TRIM
