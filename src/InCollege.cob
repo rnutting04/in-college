@@ -201,7 +201,7 @@
        *> Jobs
        01 WS-Number-Jobs           PIC 9 VALUE 0.
        01 WS-Job-Table.
-           05 WS-Job OCCURS 3 TIMES.
+           05 WS-Job OCCURS 50 TIMES.
                10 JB-ID            PIC 9(3).
                10 JB-Title         PIC X(30).
                10 JB-Desc          PIC X(200).
@@ -1644,11 +1644,6 @@
            MOVE "--- Post a New Job/Internship ---" TO WS-Line
            PERFORM OUTPUT-LINE
 
-           ADD 1 TO WS-Number-Jobs
-           MOVE WS-Number-Jobs TO WS-Found-Index
-
-           ADD 1 TO WS-Max-Job-ID.
-           MOVE WS-Max-Job-ID TO JB-ID(WS-Found-Index).
 
            *> -------- Job Title (X(30)) [REQUIRED] --------
            MOVE SPACES TO WS-INPUT-TRIM
@@ -1656,6 +1651,13 @@
                MOVE "Enter Job Title:" TO WS-Line
                PERFORM OUTPUT-LINE
                PERFORM READ-INPUT
+
+               ADD 1 TO WS-Number-Jobs
+               MOVE WS-Number-Jobs TO WS-Found-Index
+
+               ADD 1 TO WS-Max-Job-ID
+               MOVE WS-Max-Job-ID TO JB-ID(WS-Found-Index)
+
                MOVE InputRecord TO WS-INPUT-TRIM
                MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
                IF WS-INPUT-TRIM = SPACES
