@@ -30,6 +30,11 @@
                ACCESS IS SEQUENTIAL
                FILE STATUS IS WS-ActiveConns-Status.
 
+           SELECT JobsFile ASSIGN TO "InCollege-Jobs.txt"
+               ORGANIZATION IS LINE SEQUENTIAL
+               ACCESS IS SEQUENTIAL
+               FILE STATUS IS WS-Jobs-Status.
+
        DATA DIVISION.
        FILE SECTION.
        FD  InputFile.
@@ -73,6 +78,15 @@
            05 ACR-User1                PIC X(20).
            05 ACR-User2                PIC X(20).
 
+       FD  JobsFile.
+       01  JobRecord.
+           05 JR-ID                    PIC 9(3).
+           05 JR-Title                 PIC X(30).
+           05 JR-Desc                  PIC X(200).
+           05 JR-Emp-Name              PIC X(30).
+           05 JR-Location              PIC X(30).
+           05 JR-Salary                PIC X(30).
+
        WORKING-STORAGE SECTION.
 
        *> --- File status
@@ -80,6 +94,7 @@
        01 WS-Profiles-Status  PIC XX VALUE "00".
        01 WS-Connections-Status PIC XX VALUE "00".
        01 WS-ActiveConns-Status PIC XX VALUE "00".
+       01 WS-Jobs-Status       PIC XX VALUE "00".
        *>-------
        01 WS-EOF-Flag                  PIC X VALUE "N".
            88 EOF                      VALUE "Y".
@@ -183,6 +198,18 @@
               10 Temp-CN-To-Username   PIC X(20).
               10 Temp-CN-Status        PIC X(10).
 
+       *> Jobs
+       01 WS-Number-Jobs           PIC 9 VALUE 0.
+       01 WS-Job-Table.
+           05 WS-Job OCCURS 50 TIMES.
+               10 JB-ID            PIC 9(3).
+               10 JB-Title         PIC X(30).
+               10 JB-Desc          PIC X(200).
+               10 JB-Emp-Name      PIC X(30).
+               10 JB-Location      PIC X(30).
+               10 JB-Salary        PIC X(30).
+
+       01 WS-Max-Job-ID              PIC 9(3) VALUE 0.
 
        PROCEDURE DIVISION.
            PERFORM MAIN.
@@ -196,6 +223,7 @@
            PERFORM LOAD-PROFILES
            PERFORM LOAD-CONNECTIONS
            PERFORM LOAD-ACTIVE-CONNS
+           PERFORM LOAD-JOBS
 
            PERFORM UNTIL EOF-Input
                PERFORM MAIN-MENU
@@ -205,6 +233,7 @@
            PERFORM SAVE-PROFILES
            PERFORM SAVE-CONNECTIONS
            PERFORM SAVE-ACTIVE-CONNS
+           PERFORM SAVE-JOBS
 
            CLOSE InputFile
            CLOSE OutputFile
@@ -368,6 +397,51 @@
            END-PERFORM
            CLOSE ActiveConnsFile.
 
+       LOAD-JOBS.
+           MOVE "00" TO WS-Jobs-Status
+           OPEN INPUT JobsFile
+           IF WS-Jobs-Status = "35"
+               *> File missing — create it empty, then reopen for input
+               OPEN OUTPUT JobsFile
+               CLOSE JobsFile
+               OPEN INPUT JobsFile
+           END-IF
+
+           MOVE 0 TO WS-Number-Jobs
+           MOVE "N" TO WS-EOF-Flag
+           PERFORM UNTIL WS-Number-Jobs = 3 OR EOF
+               READ JobsFile INTO JobRecord
+                   AT END SET EOF TO TRUE
+                   NOT AT END
+                       ADD 1 TO WS-Number-Jobs
+                       MOVE JR-ID        TO JB-ID(WS-Number-Jobs)
+                       MOVE JR-Title     TO JB-Title(WS-Number-Jobs)
+                       MOVE JR-Desc      TO JB-Desc(WS-Number-Jobs)
+                       MOVE JR-Emp-Name  TO JB-Emp-Name(WS-Number-Jobs)
+                       MOVE JR-Location  TO JB-Location(WS-Number-Jobs)
+                       MOVE JR-Salary    TO JB-Salary(WS-Number-Jobs)
+                       *> Make sure each Id is unique
+                       IF JR-ID > WS-Max-Job-ID
+                       MOVE JR-ID TO WS-Max-Job-ID
+                       END-IF
+               END-READ
+           END-PERFORM
+           CLOSE JobsFile
+           MOVE "N" TO WS-EOF-Flag.
+
+       SAVE-JOBS.
+           OPEN OUTPUT JobsFile
+           PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Number-Jobs
+               MOVE JB-ID(COUNTER)         TO JR-ID
+               MOVE JB-Title(COUNTER)      TO JR-Title
+               MOVE JB-Desc(COUNTER)       TO JR-Desc
+               MOVE JB-Emp-Name(COUNTER)   TO JR-Emp-Name
+               MOVE JB-Location(COUNTER)   TO JR-Location
+               MOVE JB-Salary(COUNTER)     TO JR-Salary
+               WRITE JobRecord
+           END-PERFORM
+           CLOSE JobsFile.
+
 
            MAIN-MENU.
                PERFORM UNTIL EOF-Input
@@ -420,6 +494,7 @@
                        PERFORM SAVE-PROFILES
                        PERFORM SAVE-CONNECTIONS
                        PERFORM SAVE-ACTIVE-CONNS
+                       PERFORM SAVE-JOBS
                        CLOSE InputFile
                        CLOSE OutputFile
                        STOP RUN
@@ -582,6 +657,10 @@
                PERFORM OUTPUT-LINE
                MOVE "5. View My Network" TO WS-Line
                PERFORM OUTPUT-LINE
+               MOVE "6. Find someone you know" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "7. Search for a job" TO WS-Line
+               PERFORM OUTPUT-LINE
                MOVE "Enter your choice:" TO WS-Line
                PERFORM OUTPUT-LINE
 
@@ -593,8 +672,7 @@
                    WHEN "View My Profile"
                        PERFORM VIEW-MY-PROFILE
                    WHEN "Search for a job"
-                       MOVE "Job search/internship is under construction." TO WS-Line
-                       PERFORM OUTPUT-LINE
+                       PERFORM JOBS-MENU
                    WHEN "Find someone you know"
                        PERFORM FIND-SOMEONE-YOU-KNOW
                    WHEN "Search for User"
@@ -1533,3 +1611,125 @@
                PERFORM OUTPUT-LINE
 
            END-IF.
+
+       JOBS-MENU.
+           PERFORM UNTIL EOF-Input
+               MOVE "--- Job Search/Internship Menu ---" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "1. Post a Job/Internship" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "2. Browse Jobs/Internships" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "3. Back to Main Menu" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Enter your choice:" TO WS-Line
+               PERFORM OUTPUT-LINE
+
+               PERFORM READ-INPUT
+
+               EVALUATE InputRecord
+                   WHEN "1. Post a Job/Internship"
+                       PERFORM POST-JOB
+                   WHEN "2. Browse Jobs/Internships"
+                       MOVE "Job search/internship is under construction." TO WS-Line
+                       PERFORM OUTPUT-LINE
+                   WHEN "3. Back to Main Menu"
+                       EXIT PERFORM
+                   WHEN OTHER
+                       MOVE "Invalid choice. Please try again." TO WS-Line
+                       PERFORM OUTPUT-LINE
+           END-PERFORM.
+
+       POST-JOB.
+           MOVE "--- Post a New Job/Internship ---" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+
+           *> -------- Job Title (X(30)) [REQUIRED] --------
+           MOVE SPACES TO WS-INPUT-TRIM
+           PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+               MOVE "Enter Job Title:" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+
+               ADD 1 TO WS-Number-Jobs
+               MOVE WS-Number-Jobs TO WS-Found-Index
+
+               ADD 1 TO WS-Max-Job-ID
+               MOVE WS-Max-Job-ID TO JB-ID(WS-Found-Index)
+
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE "Job Title is required. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
+           MOVE SPACES TO JB-Title(WS-Found-Index)
+           MOVE WS-INPUT-TRIM(1:30) TO JB-Title(WS-Found-Index)
+
+           *> -------- Description (X(200) [REQUIRED]; input is 100 chars max) --------
+           MOVE SPACES TO WS-INPUT-TRIM
+           PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+               MOVE "Enter Description (max 200 chars):" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE "Description is required. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
+           MOVE SPACES TO JB-Desc(WS-Found-Index)
+           MOVE WS-INPUT-TRIM(1:100) TO JB-Desc(WS-Found-Index)
+
+           *> -------- Employer Name (X(30)) [REQUIRED] --------
+           MOVE SPACES TO WS-INPUT-TRIM
+           PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+               MOVE "Enter Employer Name:" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE "Employer Name is required. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
+           MOVE SPACES TO JB-Emp-Name(WS-Found-Index)
+           MOVE WS-INPUT-TRIM(1:30) TO JB-Emp-Name(WS-Found-Index)
+
+           *> -------- Location (X(30)) [REQUIRED] --------
+           MOVE SPACES TO WS-INPUT-TRIM
+           PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+               MOVE "Enter Location:" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE "Location is required. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
+           MOVE SPACES TO JB-Location(WS-Found-Index)
+           MOVE WS-INPUT-TRIM(1:30) TO JB-Location(WS-Found-Index)
+
+           *> -------- Location (X(30)) --------
+           MOVE SPACES TO WS-INPUT-TRIM
+           PERFORM UNTIL WS-INPUT-TRIM NOT = SPACES
+               MOVE "Enter Salary (optional, enter 'NONE' to skip):" TO WS-Line
+               PERFORM OUTPUT-LINE
+               PERFORM READ-INPUT
+               MOVE InputRecord TO WS-INPUT-TRIM
+               MOVE FUNCTION TRIM(WS-INPUT-TRIM TRAILING) TO WS-INPUT-TRIM
+               IF WS-INPUT-TRIM = SPACES
+                   MOVE "Salary cannot be left blank, enter 'NONE' to skip. Please try again." TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
+           MOVE SPACES TO JB-Salary(WS-Found-Index)
+           MOVE WS-INPUT-TRIM(1:30) TO JB-Salary(WS-Found-Index)
+           MOVE "Job posted successfully!" TO WS-Line
+           PERFORM OUTPUT-LINE.

@@ -1,0 +1,11 @@
+Log In
+steve
+Password1!
+Search for a job
+1. Post a Job/Internship
+This is a very long job title that exceeds thirty characters limit
+This is a very long description that should test the maximum character limit of two hundred characters for the description field to ensure proper truncation or handling
+This is a very long employer name that exceeds limit
+This is a very long location name that exceeds the thirty character limit
+This is a very long salary string that exceeds the thirty character limit
+3. Back to Main Menu
