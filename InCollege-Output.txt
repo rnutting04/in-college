@@ -17,7 +17,8 @@ Enter your choice:
 --- Job Search/Internship Menu ---
 1. Post a Job/Internship
 2. Browse Jobs/Internships
-3. Back to Main Menu
+3. View My Applications
+4. Back to Main Menu
 Enter your choice:
 --- Post a New Job/Internship ---
 Enter Job Title:
@@ -29,5 +30,61 @@ Job posted successfully!
 --- Job Search/Internship Menu ---
 1. Post a Job/Internship
 2. Browse Jobs/Internships
-3. Back to Main Menu
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
+--- Available Job Listings ---
+1. Junior Data Analyst at Oracle (Miami, Fl) [ID: 1]
+2. Senior Cloud Engineer at AWS (Orlando, Fl) [ID: 2]
+3. Senior Cloud Engineer at AWS (Orlando, Fl) [ID: 3]
+4. Senior Cloud Engineer at AWS (Orlando, Fl) [ID: 4]
+-----------------------------
+Enter job number to view details, or 0 to go back:
+--- Job Details ---
+Title: Junior Data Analyst
+Description: 1+ years experience working with a team.
+Employer: Oracle
+Location: Miami, Fl
+Salary: $200,000
+-------------------
+Apply for this Job
+Back to Job List
+Enter your choice:
+Your application for Junior Data Analyst at Oracle has been submitted.
+--- Available Job Listings ---
+1. Junior Data Analyst at Oracle (Miami, Fl) [ID: 1]
+2. Senior Cloud Engineer at AWS (Orlando, Fl) [ID: 2]
+3. Senior Cloud Engineer at AWS (Orlando, Fl) [ID: 3]
+4. Senior Cloud Engineer at AWS (Orlando, Fl) [ID: 4]
+-----------------------------
+Enter job number to view details, or 0 to go back:
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
+--- Your Job Applications ---
+Application Summary for Daniel85
+------------------------------
+Job Title: Junior Data Analyst
+Employer: Oracle
+Location: Miami, Fl
+---
+------------------------------
+Total Applications: 0001
+------------------------------
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+6. Find someone you know
+7. Search for a job
 Enter your choice:

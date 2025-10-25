@@ -35,6 +35,11 @@
                ACCESS IS SEQUENTIAL
                FILE STATUS IS WS-Jobs-Status.
 
+           SELECT ApplicationsFile ASSIGN TO "InCollege-Applications.txt"
+               ORGANIZATION IS LINE SEQUENTIAL
+               ACCESS IS SEQUENTIAL
+               FILE STATUS IS WS-Applications-Status.
+
        DATA DIVISION.
        FILE SECTION.
        FD  InputFile.
@@ -86,6 +91,11 @@
            05 JR-Emp-Name              PIC X(30).
            05 JR-Location              PIC X(30).
            05 JR-Salary                PIC X(30).
+
+       FD  ApplicationsFile.
+       01  ApplicationRecord.
+           05 AR-Username              PIC X(20).
+           05 AR-JobID                 PIC 9(3).
 
        WORKING-STORAGE SECTION.
 
@@ -211,6 +221,39 @@
 
        01 WS-Max-Job-ID              PIC 9(3) VALUE 0.
 
+       *> Application storage
+
+       01 WS-Applications-Status       PIC XX VALUE "00".
+       01 WS-Number-Applications       PIC 9(4) VALUE 0.
+       01 WS-Applications-Loaded       PIC X VALUE "N".
+          88 Apps-Loaded               VALUE "Y".
+
+       01 WS-Application-Table.
+           05 WS-Application OCCURS 500 TIMES.
+               10 AP-Username         PIC X(20).
+               10 AP-JobID            PIC 9(3).
+
+       01 WS-Selected-Job-Index        PIC 9(3) VALUE 0.
+       01 WS-Selected-Job-ID           PIC 9(3) VALUE 0.
+
+       01 WS-Tmp-Num                   PIC 9(3) VALUE 0.
+       01 WS-My-App-Count         PIC 9(4) VALUE 0.
+       01 WS-Idx-3dig               PIC Z(3).
+       01 WS-JobID-3dig             PIC Z(3).
+
+       01 WS-App-Applied-Flag        PIC X VALUE "N".
+          88 App-Applied        VALUE "Y".
+          88 App-Not-Applied            VALUE "N".
+
+       01 JB-Poster OCCURS 500 TIMES.
+          05 JB-Poster-User          PIC X(20).
+
+       *> menu strings for job menu
+       01 STR-JOB-MENU-HDR             PIC X(50) VALUE "--- Job Search/Internship Menu ---".
+       01 STR-BROWSE-HDR               PIC X(50) VALUE "--- Available Job Listings ---".
+       01 STR-DETAILS-HDR              PIC X(50) VALUE "--- Job Details ---".
+       01 STR-APPS-HDR                 PIC X(50) VALUE "--- Your Job Applications ---".
+
        PROCEDURE DIVISION.
            PERFORM MAIN.
            STOP RUN.
@@ -224,6 +267,7 @@
            PERFORM LOAD-CONNECTIONS
            PERFORM LOAD-ACTIVE-CONNS
            PERFORM LOAD-JOBS
+           PERFORM LOAD-APPLICATIONS
 
            PERFORM UNTIL EOF-Input
                PERFORM MAIN-MENU
@@ -234,6 +278,7 @@
            PERFORM SAVE-CONNECTIONS
            PERFORM SAVE-ACTIVE-CONNS
            PERFORM SAVE-JOBS
+           PERFORM SAVE-APPLICATIONS
 
            CLOSE InputFile
            CLOSE OutputFile
@@ -1620,7 +1665,9 @@
                PERFORM OUTPUT-LINE
                MOVE "2. Browse Jobs/Internships" TO WS-Line
                PERFORM OUTPUT-LINE
-               MOVE "3. Back to Main Menu" TO WS-Line
+               MOVE "3. View My Applications" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "4. Back to Main Menu" TO WS-Line
                PERFORM OUTPUT-LINE
                MOVE "Enter your choice:" TO WS-Line
                PERFORM OUTPUT-LINE
@@ -1631,9 +1678,10 @@
                    WHEN "1. Post a Job/Internship"
                        PERFORM POST-JOB
                    WHEN "2. Browse Jobs/Internships"
-                       MOVE "Job search/internship is under construction." TO WS-Line
-                       PERFORM OUTPUT-LINE
-                   WHEN "3. Back to Main Menu"
+                       PERFORM BROWSE-JOBS
+                   WHEN "3. View My Applications"
+                       PERFORM VIEW-MY-APPLICATIONS
+                   WHEN "4. Back to Main Menu"
                        EXIT PERFORM
                    WHEN OTHER
                        MOVE "Invalid choice. Please try again." TO WS-Line
@@ -1731,5 +1779,306 @@
            END-PERFORM
            MOVE SPACES TO JB-Salary(WS-Found-Index)
            MOVE WS-INPUT-TRIM(1:30) TO JB-Salary(WS-Found-Index)
+           MOVE WS-Current-Username TO JB-Poster-User(WS-Number-Jobs)
            MOVE "Job posted successfully!" TO WS-Line
            PERFORM OUTPUT-LINE.
+
+
+       LOAD-APPLICATIONS.
+           IF Apps-Loaded
+               EXIT PARAGRAPH
+           END-IF
+           MOVE "00" TO WS-Applications-Status
+           OPEN INPUT ApplicationsFile
+           IF WS-Applications-Status = "35"
+               *> File missing — create empty and reopen
+               OPEN OUTPUT ApplicationsFile
+               CLOSE ApplicationsFile
+               OPEN INPUT ApplicationsFile
+           END-IF
+           MOVE 0 TO WS-Number-Applications
+           MOVE "N" TO WS-EOF-Flag
+           PERFORM UNTIL EOF
+               READ ApplicationsFile INTO ApplicationRecord
+                   AT END SET EOF TO TRUE
+                   NOT AT END
+                       ADD 1 TO WS-Number-Applications
+                       MOVE AR-Username TO AP-Username(WS-Number-Applications)
+                       MOVE AR-JobID    TO AP-JobID(WS-Number-Applications)
+               END-READ
+           END-PERFORM
+           CLOSE ApplicationsFile
+           MOVE "Y" TO WS-Applications-Loaded
+           .
+
+       *> Persist all applications back to file
+       SAVE-APPLICATIONS.
+           OPEN OUTPUT ApplicationsFile
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Applications
+               MOVE AP-Username(COUNTER) TO AR-Username
+               MOVE AP-JobID(COUNTER)    TO AR-JobID
+               WRITE ApplicationRecord
+               ADD 1 TO COUNTER
+           END-PERFORM
+           CLOSE ApplicationsFile
+           .
+
+       *> Utility: check if current user already applied to job id in WS-Selected-Job-ID
+       ALREADY-APPLIED.
+           MOVE "N" TO WS-App-Applied-Flag
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Applications
+               IF AP-Username(COUNTER) = WS-Current-Username
+                  AND AP-JobID(COUNTER) = WS-Selected-Job-ID
+                   MOVE "Y" TO WS-App-Applied-Flag
+                   EXIT PERFORM
+               END-IF
+               ADD 1 TO COUNTER
+           END-PERFORM
+           .
+
+       *> Browse all jobs and allow viewing details/applying
+       BROWSE-JOBS.
+           PERFORM LOAD-APPLICATIONS
+
+           PERFORM UNTIL EOF-Input
+               MOVE STR-BROWSE-HDR TO WS-Line
+               PERFORM OUTPUT-LINE
+
+               IF WS-Number-Jobs = 0
+                   MOVE "No job postings are currently available." TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   MOVE "-----------------------------" TO WS-Line
+                   PERFORM OUTPUT-LINE
+                   EXIT PERFORM
+               END-IF
+
+               *> List jobs with 1-based numbering
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Jobs
+               MOVE COUNTER            TO WS-Idx-3dig
+               MOVE JB-ID(COUNTER)     TO WS-JobID-3dig
+
+               MOVE SPACES TO WS-Line
+               STRING
+                   FUNCTION TRIM(WS-Idx-3dig)          DELIMITED BY SIZE
+                   ". "                                DELIMITED BY SIZE
+                   FUNCTION TRIM(JB-Title(COUNTER))    DELIMITED BY SIZE
+                   " at "                              DELIMITED BY SIZE
+                   FUNCTION TRIM(JB-Emp-Name(COUNTER)) DELIMITED BY SIZE
+                   " ("                                DELIMITED BY SIZE
+                   FUNCTION TRIM(JB-Location(COUNTER)) DELIMITED BY SIZE
+                   ") [ID: "                           DELIMITED BY SIZE
+                   FUNCTION TRIM(WS-JobID-3dig)        DELIMITED BY SIZE
+                   "]"                                 DELIMITED BY SIZE
+                 INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+
+               ADD 1 TO COUNTER
+           END-PERFORM
+
+               MOVE "-----------------------------" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Enter job number to view details, or 0 to go back:" TO WS-Line
+               PERFORM OUTPUT-LINE
+
+               PERFORM READ-INPUT
+
+               *> Interpret the number typed in InputRecord
+               MOVE 0 TO WS-Tmp-Num
+               MOVE FUNCTION NUMVAL (InputRecord) TO WS-Tmp-Num
+
+               IF WS-Tmp-Num = 0
+                   EXIT PERFORM
+               ELSE
+                   IF WS-Tmp-Num >= 1 AND WS-Tmp-Num <= WS-Number-Jobs
+                       MOVE WS-Tmp-Num TO WS-Selected-Job-Index
+                       PERFORM DISPLAY-JOB-DETAILS
+                   ELSE
+                       MOVE "Invalid selection." TO WS-Line
+                       PERFORM OUTPUT-LINE
+                   END-IF
+               END-IF
+           END-PERFORM
+           .
+
+       *> Show details for selected job and allow Apply/Back
+       DISPLAY-JOB-DETAILS.
+           MOVE STR-DETAILS-HDR TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           MOVE JB-ID(WS-Selected-Job-Index) TO WS-Selected-Job-ID
+
+           MOVE SPACES TO WS-Line
+           STRING "Title: " FUNCTION TRIM(JB-Title(WS-Selected-Job-Index))
+             DELIMITED BY SIZE INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Description: " FUNCTION TRIM(JB-Desc(WS-Selected-Job-Index))
+             DELIMITED BY SIZE INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Employer: " FUNCTION TRIM(JB-Emp-Name(WS-Selected-Job-Index))
+             DELIMITED BY SIZE INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Location: " FUNCTION TRIM(JB-Location(WS-Selected-Job-Index))
+             DELIMITED BY SIZE INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING "Salary: " FUNCTION TRIM(JB-Salary(WS-Selected-Job-Index))
+             DELIMITED BY SIZE INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE "-------------------" TO WS-Line
+           PERFORM OUTPUT-LINE
+           MOVE "Apply for this Job" TO WS-Line
+           PERFORM OUTPUT-LINE
+           MOVE "Back to Job List" TO WS-Line
+           PERFORM OUTPUT-LINE
+           MOVE "Enter your choice:" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           PERFORM READ-INPUT
+
+           EVALUATE TRUE
+               WHEN InputRecord = "Apply for this Job"
+                   PERFORM APPLY-TO-JOB
+               WHEN InputRecord = "Back to Job List"
+                   CONTINUE
+               WHEN OTHER
+                   MOVE "Invalid choice. Returning to list." TO WS-Line
+                   PERFORM OUTPUT-LINE
+           END-EVALUATE
+           .
+
+
+       *> Add an application record for current user -> selected job
+       APPLY-TO-JOB.
+           PERFORM LOAD-APPLICATIONS
+           IF JB-Poster-User(WS-Selected-Job-Index) = WS-Current-Username
+              MOVE "You cannot apply to a job you posted." TO WS-Line
+              PERFORM OUTPUT-LINE
+              EXIT PARAGRAPH
+           END-IF
+           *> avoid duplicates
+           PERFORM ALREADY-APPLIED
+           IF App-Applied
+               MOVE SPACES TO WS-Line
+               STRING "You have already applied for "
+                      FUNCTION TRIM(JB-Title(WS-Selected-Job-Index))
+                      " at "
+                      FUNCTION TRIM(JB-Emp-Name(WS-Selected-Job-Index))
+                 DELIMITED BY SIZE INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+               EXIT PARAGRAPH
+           END-IF
+
+           ADD 1 TO WS-Number-Applications
+           MOVE WS-Current-Username            TO AP-Username(WS-Number-Applications)
+           MOVE JB-ID(WS-Selected-Job-Index)   TO AP-JobID(WS-Number-Applications)
+
+           *> Confirmation message (spec format)
+           STRING
+               "Your application for "
+               FUNCTION TRIM(JB-Title(WS-Selected-Job-Index))
+               " at "
+               FUNCTION TRIM(JB-Emp-Name(WS-Selected-Job-Index))
+               " has been submitted."
+               DELIMITED BY SIZE
+               INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+           .
+
+       *> Report: list applications for the logged-in user
+       VIEW-MY-APPLICATIONS.
+           PERFORM LOAD-APPLICATIONS
+
+           MOVE STR-APPS-HDR TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING
+               "Application Summary for "
+               FUNCTION TRIM(WS-Current-Username)
+               DELIMITED BY SIZE
+               INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE "------------------------------" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           *> Count + print details by joining on jobs table via JobID
+
+           MOVE 0 TO WS-My-App-Count
+
+           MOVE 1 TO COUNTER
+           PERFORM UNTIL COUNTER > WS-Number-Applications
+               IF AP-Username(COUNTER) = WS-Current-Username
+                   ADD 1 TO WS-My-App-Count
+                   *> Find job row with that ID
+                   MOVE 1 TO WS-Tmp-Num
+                   PERFORM UNTIL WS-Tmp-Num > WS-Number-Jobs
+                       IF JB-ID(WS-Tmp-Num) = AP-JobID(COUNTER)
+                           MOVE SPACES TO WS-Line
+                           STRING "Job Title: "
+                                  FUNCTION TRIM(JB-Title(WS-Tmp-Num))
+                             DELIMITED BY SIZE
+                             INTO WS-Line
+                           END-STRING
+                           PERFORM OUTPUT-LINE
+
+                           MOVE SPACES TO WS-Line
+                           STRING "Employer: "
+                                  FUNCTION TRIM(JB-Emp-Name(WS-Tmp-Num))
+                             DELIMITED BY SIZE
+                             INTO WS-Line
+                           END-STRING
+                           PERFORM OUTPUT-LINE
+
+                           MOVE SPACES TO WS-Line
+                           STRING "Location: "
+                                  FUNCTION TRIM(JB-Location(WS-Tmp-Num))
+                             DELIMITED BY SIZE
+                             INTO WS-Line
+                           END-STRING
+                           PERFORM OUTPUT-LINE
+
+                           MOVE "---" TO WS-Line
+                           PERFORM OUTPUT-LINE
+                           EXIT PERFORM
+                       END-IF
+                       ADD 1 TO WS-Tmp-Num
+                   END-PERFORM
+               END-IF
+               ADD 1 TO COUNTER
+           END-PERFORM
+
+           MOVE "------------------------------" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           MOVE SPACES TO WS-Line
+           STRING
+               "Total Applications: " DELIMITED BY SIZE
+               WS-My-App-Count        DELIMITED BY SIZE
+               INTO WS-Line
+           END-STRING
+           PERFORM OUTPUT-LINE
+
+           MOVE "------------------------------" TO WS-Line
+           PERFORM OUTPUT-LINE
+           .
