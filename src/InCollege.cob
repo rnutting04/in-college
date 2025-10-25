@@ -540,6 +540,7 @@
                        PERFORM SAVE-CONNECTIONS
                        PERFORM SAVE-ACTIVE-CONNS
                        PERFORM SAVE-JOBS
+                       PERFORM SAVE-APPLICATIONS
                        CLOSE InputFile
                        CLOSE OutputFile
                        STOP RUN
