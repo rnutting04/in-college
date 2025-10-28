@@ -22,24 +22,23 @@ Enter your choice:
 Enter your choice:
 --- Available Job Listings ---
 1. Senior Project Manager at Microsoft (Redmond, WA) [ID: 1]
-2. Senior Cloud Engineer at AWS (Orlando, Fl) [ID: 2]
-3. Junior Data Analyst at Oracle (Miami, Fl) [ID: 3]
 -----------------------------
 Enter job number to view details, or 0 to go back:
-Invalid selection.
+--- Job Details ---
+Title: Senior Project Manager
+Description: 3+ years experience working with a team.
+Employer: Microsoft
+Location: Redmond, WA
+Salary: $200,000
+-------------------
+Apply for this Job
+Back to Job List
+Enter your choice:
+Your application for Senior Project Manager at Microsoft has been submitted.
 --- Available Job Listings ---
 1. Senior Project Manager at Microsoft (Redmond, WA) [ID: 1]
-2. Senior Cloud Engineer at AWS (Orlando, Fl) [ID: 2]
-3. Junior Data Analyst at Oracle (Miami, Fl) [ID: 3]
 -----------------------------
 Enter job number to view details, or 0 to go back:
---- Job Search/Internship Menu ---
-1. Post a Job/Internship
-2. Browse Jobs/Internships
-3. View My Applications
-4. Back to Main Menu
-Enter your choice:
-Invalid choice. Please try again.
 --- Job Search/Internship Menu ---
 1. Post a Job/Internship
 2. Browse Jobs/Internships
@@ -53,12 +52,8 @@ Job Title: Senior Project Manager
 Employer: Microsoft
 Location: Redmond, WA
 ---
-Job Title: Junior Data Analyst
-Employer: Oracle
-Location: Miami, Fl
----
 ------------------------------
-Total Applications: 0002
+Total Applications: 0001
 ------------------------------
 --- Job Search/Internship Menu ---
 1. Post a Job/Internship

@@ -28,6 +28,8 @@ if [ "$4" = "r" ]; then
     touch InCollege-Connections.txt
     rm -f InCollege-ActiveConns.txt
     touch InCollege-ActiveConns.txt
+    rm -f InCollege-Applications.txt
+    touch InCollege-Applications.txt
 fi
 
 # Create a folder for the output files if it doesn't exist.
