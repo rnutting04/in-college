@@ -40,6 +40,12 @@
                ACCESS IS SEQUENTIAL
                FILE STATUS IS WS-Applications-Status.
 
+
+            SELECT MessagesFile ASSIGN TO "InCollege-Messages.txt"
+                ORGANIZATION IS LINE SEQUENTIAL
+                ACCESS IS SEQUENTIAL
+                FILE STATUS IS WS-Messages-Status.
+
        DATA DIVISION.
        FILE SECTION.
        FD  InputFile.
@@ -96,6 +102,13 @@
        01  ApplicationRecord.
            05 AR-Username              PIC X(20).
            05 AR-JobID                 PIC 9(3).
+
+        FD  MessagesFile.
+        01  MessageRecord.
+            05 MR-Sender       PIC X(20).
+            05 MR-Recipient    PIC X(20).
+            05 MR-Content      PIC X(200).
+
 
        WORKING-STORAGE SECTION.
 
@@ -167,6 +180,8 @@
        01 WS-ZeroLine                  PIC X(100) VALUE SPACES.
        01 WS-Num-Edit                  PIC ZZ9.
        01 WS-ANS                       PIC X VALUE SPACE.  *> Holds Y/N answers
+        01 Found-Flag                 PIC X VALUE "N".
+            88 Found                  VALUE "Y".
 
        01 WS-INPUT-TRIM PIC X(100).
        01 WS-Years-OK     PIC X VALUE "N".
@@ -254,6 +269,26 @@
        01 STR-DETAILS-HDR              PIC X(50) VALUE "--- Job Details ---".
        01 STR-APPS-HDR                 PIC X(50) VALUE "--- Your Job Applications ---".
 
+       *> Messages
+       01 WS-Messages-Status           PIC XX VALUE "00".
+       01 WS-Number-Messages           PIC 9(4) VALUE 0.
+       01 WS-Messages-Table.
+           05 WS-Message OCCURS 500 TIMES.
+              10 MS-Sender             PIC X(20).
+              10 MS-Recipient          PIC X(20).
+              10 MS-Content            PIC X(200).
+
+        01 WS-Recipient-Username     PIC X(20).
+        01 WS-Message-Content        PIC X(200).
+
+        01 WS-Is-Connected           PIC X VALUE "N".
+           88 Is-Connected           VALUE "Y".
+
+        01 WS-User-Found             PIC X VALUE "N".
+           88 User-Found             VALUE "Y".
+
+        01 WS-Message-Recipient    PIC X(20).
+        01 WS-Message-Text         PIC X(200).
        PROCEDURE DIVISION.
            PERFORM MAIN.
            STOP RUN.
@@ -268,6 +303,7 @@
            PERFORM LOAD-ACTIVE-CONNS
            PERFORM LOAD-JOBS
            PERFORM LOAD-APPLICATIONS
+           PERFORM LOAD-MESSAGES
 
            PERFORM UNTIL EOF-Input
                PERFORM MAIN-MENU
@@ -279,6 +315,7 @@
            PERFORM SAVE-ACTIVE-CONNS
            PERFORM SAVE-JOBS
            PERFORM SAVE-APPLICATIONS
+           PERFORM SAVE-MESSAGES
 
            CLOSE InputFile
            CLOSE OutputFile
@@ -541,6 +578,7 @@
                        PERFORM SAVE-ACTIVE-CONNS
                        PERFORM SAVE-JOBS
                        PERFORM SAVE-APPLICATIONS
+                       PERFORM SAVE-MESSAGES
                        CLOSE InputFile
                        CLOSE OutputFile
                        STOP RUN
@@ -707,6 +745,8 @@
                PERFORM OUTPUT-LINE
                MOVE "7. Search for a job" TO WS-Line
                PERFORM OUTPUT-LINE
+                MOVE "8. Messages" TO WS-Line
+                PERFORM OUTPUT-LINE
                MOVE "Enter your choice:" TO WS-Line
                PERFORM OUTPUT-LINE
 
@@ -729,6 +769,10 @@
                        PERFORM MANAGE-PENDING-REQUESTS
                    WHEN "View My Network"
                        PERFORM VIEW-MY-NETWORK
+                    WHEN "Messages"
+                        PERFORM MESSAGES-MENU
+                    WHEN "8. Messages"
+                        PERFORM MESSAGES-MENU
                    WHEN OTHER
                        MOVE "Invalid choice. Please try again." TO WS-Line
                        PERFORM OUTPUT-LINE
@@ -2083,3 +2127,120 @@
            MOVE "------------------------------" TO WS-Line
            PERFORM OUTPUT-LINE
            .
+
+       *> -------------------- Messaging Persistence --------------------
+
+       LOAD-MESSAGES.
+           MOVE "00" TO WS-Messages-Status
+           OPEN INPUT MessagesFile
+           IF WS-Messages-Status = "35"
+               OPEN OUTPUT MessagesFile
+               CLOSE MessagesFile
+               OPEN INPUT MessagesFile
+           END-IF
+           MOVE 0 TO WS-Number-Messages
+           MOVE "N" TO WS-EOF-Flag
+           PERFORM UNTIL WS-Number-Messages = 500 OR EOF
+               READ MessagesFile INTO MessageRecord
+                   AT END SET EOF TO TRUE
+                   NOT AT END
+                       ADD 1 TO WS-Number-Messages
+                       MOVE MR-Sender    TO MS-Sender(WS-Number-Messages)
+                       MOVE MR-Recipient TO MS-Recipient(WS-Number-Messages)
+                       MOVE MR-Content   TO MS-Content(WS-Number-Messages)
+               END-READ
+           END-PERFORM
+           CLOSE MessagesFile
+           MOVE "N" TO WS-EOF-Flag.
+
+       SAVE-MESSAGES.
+           OPEN OUTPUT MessagesFile
+           PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Number-Messages
+               MOVE MS-Sender(COUNTER)    TO MR-Sender
+               MOVE MS-Recipient(COUNTER) TO MR-Recipient
+               MOVE MS-Content(COUNTER)   TO MR-Content
+               WRITE MessageRecord
+           END-PERFORM
+           CLOSE MessagesFile.
+
+       *> -------------------- Messages Menu --------------------
+
+       MESSAGES-MENU.
+           MOVE "--- Messages Menu ---" TO WS-Line
+           PERFORM OUTPUT-LINE
+           PERFORM UNTIL EOF-Input
+               MOVE "1. Send a New Message" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "2. View My Messages" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "3. Back to Main Menu" TO WS-Line
+               PERFORM OUTPUT-LINE
+               MOVE "Enter your choice:" TO WS-Line
+               PERFORM OUTPUT-LINE
+
+               PERFORM READ-INPUT
+
+               EVALUATE InputRecord
+                   WHEN "Send a New Message"
+                       PERFORM SEND-NEW-MESSAGE
+                   WHEN "View My Messages"
+                       MOVE "View My Messages is under construction." TO WS-Line
+                       PERFORM OUTPUT-LINE
+                   WHEN "Back to Main Menu"
+                       EXIT PERFORM
+                   WHEN OTHER
+                       MOVE "Invalid choice. Please try again." TO WS-Line
+                       PERFORM OUTPUT-LINE
+               END-EVALUATE
+           END-PERFORM.
+
+       SEND-NEW-MESSAGE.
+           MOVE "Enter recipient's username (must be a connection):" TO WS-Line
+           PERFORM OUTPUT-LINE
+           PERFORM READ-INPUT
+           MOVE FUNCTION TRIM(InputRecord TRAILING) TO WS-Recipient-Username
+
+           *> Validate connection between current user and recipient
+           MOVE "N" TO WS-Is-Connected
+           PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Number-Active-Conns OR Is-Connected
+               IF (AC-User1(COUNTER) = WS-Current-Username AND AC-User2(COUNTER) = WS-Recipient-Username)
+                   SET Is-Connected TO TRUE
+               ELSE
+                   IF (AC-User2(COUNTER) = WS-Current-Username AND AC-User1(COUNTER) = WS-Recipient-Username)
+                       SET Is-Connected TO TRUE
+                   END-IF
+               END-IF
+           END-PERFORM
+
+           IF NOT Is-Connected
+               MOVE "You can only message users you are connected with." TO WS-Line
+               PERFORM OUTPUT-LINE
+               EXIT PARAGRAPH
+           END-IF
+
+           MOVE "Enter your message (max 200 chars):" TO WS-Line
+           PERFORM OUTPUT-LINE
+           PERFORM READ-INPUT
+           MOVE InputRecord TO WS-Message-Content
+
+           *> Truncate to 200 if longer
+           MOVE SPACES TO MR-Content
+           MOVE WS-Message-Content(1:200) TO MR-Content
+
+           IF WS-Number-Messages < 500
+               ADD 1 TO WS-Number-Messages
+               MOVE WS-Current-Username     TO MS-Sender(WS-Number-Messages)
+               MOVE WS-Recipient-Username   TO MS-Recipient(WS-Number-Messages)
+               MOVE MR-Content              TO MS-Content(WS-Number-Messages)
+               MOVE SPACES TO WS-Line
+               STRING "Message sent to "
+                      FUNCTION TRIM(WS-Recipient-Username TRAILING)
+                      " successfully!"
+                  DELIMITED BY SIZE INTO WS-Line
+               END-STRING
+               PERFORM OUTPUT-LINE
+
+           ELSE
+               MOVE "Message store is full. Unable to save message." TO WS-Line
+               PERFORM OUTPUT-LINE
+           END-IF.
