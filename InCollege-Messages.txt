@@ -1,1 +1,8 @@
 Emily23             Daniel85            Hello
+Sophie19            Michael42           This is a valid message
+Sophie19            Michael42           This is a valid message
+Michael42           Sophie19            This is another valid message
+Sophie19            Michael42           This is a valid message
+Michael42           Sophie19            This is another valid message
+Sophie19            Michael42           This is a valid message
+Michael42           Sophie19            This is another valid message
