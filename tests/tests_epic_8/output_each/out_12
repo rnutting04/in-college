@@ -20,9 +20,19 @@ Enter your choice:
 2. View My Messages
 3. Back to Main Menu
 Enter your choice:
+Invalid choice. Please try again.
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
 Enter recipient's username (must be a connection):
-Enter your message (max 200 chars):
-Message sent to Sophie19 successfully!
+You can only message users you are connected with.
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter recipient's username (must be a connection):
+You can only message users you are connected with.
 1. Send a New Message
 2. View My Messages
 3. Back to Main Menu

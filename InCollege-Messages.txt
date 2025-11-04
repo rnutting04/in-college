@@ -6,3 +6,11 @@ Sophie19            Michael42           This is a valid message
 Michael42           Sophie19            This is another valid message
 Sophie19            Michael42           This is a valid message
 Michael42           Sophie19            This is another valid message
+Sophie19            Michael42           This is a valid message
+Michael42           Sophie19            This is another valid message
+Michael42           Sophie19            This is the positive test case. All features in this test should work.
+Sophie19            Michael42           This is a positive test case where I will try sending a message twice.
+Sophie19            Michael42           This is a positive test case where I will try sending a message twice.
+Sophie19            Michael42           This is a positive test case where I will try sending a message twice.
+Sophie19            Michael42           This is the second message.
+Michael42           Sophie19            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin posuere, nisl vel interdum luctus, sapien justo faucibus arcu, at tincidunt nunc tortor vitae odio. Curabitur vitae lacus quis nisl hendr
