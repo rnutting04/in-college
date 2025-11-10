@@ -108,6 +108,7 @@
             05 MR-Sender       PIC X(20).
             05 MR-Recipient    PIC X(20).
             05 MR-Content      PIC X(200).
+            05 MR-Timestamp    PIC X(19).
 
 
        WORKING-STORAGE SECTION.
@@ -277,6 +278,7 @@
               10 MS-Sender             PIC X(20).
               10 MS-Recipient          PIC X(20).
               10 MS-Content            PIC X(200).
+              10 MS-Timestamp          PIC X(19).
 
         01 WS-Recipient-Username     PIC X(20).
         01 WS-Message-Content        PIC X(200).
@@ -289,6 +291,19 @@
 
         01 WS-Message-Recipient    PIC X(20).
         01 WS-Message-Text         PIC X(200).
+
+        *> Working variables for timestamp generation
+        01 WS-Current-Date.
+           05 WS-Current-Year       PIC 9(4).
+           05 WS-Current-Month      PIC 9(2).
+           05 WS-Current-Day        PIC 9(2).
+        01 WS-Current-Time.
+           05 WS-Current-Hour       PIC 9(2).
+           05 WS-Current-Minute     PIC 9(2).
+           05 WS-Current-Second     PIC 9(2).
+        01 WS-Timestamp             PIC X(19).
+
+
        PROCEDURE DIVISION.
            PERFORM MAIN.
            STOP RUN.
@@ -2148,6 +2163,7 @@
                        MOVE MR-Sender    TO MS-Sender(WS-Number-Messages)
                        MOVE MR-Recipient TO MS-Recipient(WS-Number-Messages)
                        MOVE MR-Content   TO MS-Content(WS-Number-Messages)
+                       MOVE MR-Timestamp TO MS-Timestamp(WS-Number-Messages)
                END-READ
            END-PERFORM
            CLOSE MessagesFile
@@ -2159,6 +2175,7 @@
                MOVE MS-Sender(COUNTER)    TO MR-Sender
                MOVE MS-Recipient(COUNTER) TO MR-Recipient
                MOVE MS-Content(COUNTER)   TO MR-Content
+               MOVE MS-Timestamp(COUNTER) TO MR-Timestamp
                WRITE MessageRecord
            END-PERFORM
            CLOSE MessagesFile.
@@ -2192,6 +2209,28 @@
                        PERFORM OUTPUT-LINE
                END-EVALUATE
            END-PERFORM.
+
+       GENERATE-TIMESTAMP.
+           ACCEPT WS-Current-Date FROM DATE YYYYMMDD
+           ACCEPT WS-Current-Time FROM TIME
+
+           *> Format: YYYY-MM-DD HH:MM:SS
+           MOVE SPACES TO WS-Timestamp
+           STRING
+               WS-Current-Year         DELIMITED BY SIZE
+               "-"                     DELIMITED BY SIZE
+               WS-Current-Month        DELIMITED BY SIZE
+               "-"                     DELIMITED BY SIZE
+               WS-Current-Day          DELIMITED BY SIZE
+               " "                     DELIMITED BY SIZE
+               WS-Current-Hour         DELIMITED BY SIZE
+               ":"                     DELIMITED BY SIZE
+               WS-Current-Minute       DELIMITED BY SIZE
+               ":"                     DELIMITED BY SIZE
+               WS-Current-Second       DELIMITED BY SIZE
+               INTO WS-Timestamp
+           END-STRING.
+
 
        SEND-NEW-MESSAGE.
            MOVE "Enter recipient's username (must be a connection):" TO WS-Line
@@ -2227,10 +2266,14 @@
            MOVE WS-Message-Content(1:200) TO MR-Content
 
            IF WS-Number-Messages < 500
+               *> Generate timestamp for this message
+               PERFORM GENERATE-TIMESTAMP
+
                ADD 1 TO WS-Number-Messages
                MOVE WS-Current-Username     TO MS-Sender(WS-Number-Messages)
                MOVE WS-Recipient-Username   TO MS-Recipient(WS-Number-Messages)
                MOVE MR-Content              TO MS-Content(WS-Number-Messages)
+               MOVE WS-Timestamp            TO MS-Timestamp(WS-Number-Messages)
                MOVE SPACES TO WS-Line
                STRING "Message sent to "
                       FUNCTION TRIM(WS-Recipient-Username TRAILING)
@@ -2269,6 +2312,16 @@
                      DELIMITED BY SIZE INTO WS-Line
                    END-STRING
                    PERFORM OUTPUT-LINE
+
+                   *> Display timestamp if available
+                   IF MS-Timestamp(COUNTER) NOT = SPACES
+                       MOVE SPACES TO WS-Line
+                       STRING "Sent: "
+                              FUNCTION TRIM(MS-Timestamp(COUNTER) TRAILING)
+                         DELIMITED BY SIZE INTO WS-Line
+                       END-STRING
+                       PERFORM OUTPUT-LINE
+                   END-IF
 
                    MOVE "---" TO WS-Line
                    PERFORM OUTPUT-LINE
