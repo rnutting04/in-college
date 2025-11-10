@@ -2184,8 +2184,7 @@
                    WHEN "Send a New Message"
                        PERFORM SEND-NEW-MESSAGE
                    WHEN "View My Messages"
-                       MOVE "View My Messages is under construction." TO WS-Line
-                       PERFORM OUTPUT-LINE
+                       PERFORM VIEW-MY-MESSAGES
                    WHEN "Back to Main Menu"
                        EXIT PERFORM
                    WHEN OTHER
@@ -2244,3 +2243,43 @@
                MOVE "Message store is full. Unable to save message." TO WS-Line
                PERFORM OUTPUT-LINE
            END-IF.
+
+
+       VIEW-MY-MESSAGES.
+           MOVE "--- Your Messages ---" TO WS-Line
+           PERFORM OUTPUT-LINE
+
+           MOVE 0 TO WS-My-App-Count  *> Reusing counter for message count
+
+           *> Loop through all messages and display those for current user
+           PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > WS-Number-Messages
+               IF MS-Recipient(COUNTER) = WS-Current-Username
+                   ADD 1 TO WS-My-App-Count
+
+                   MOVE SPACES TO WS-Line
+                   STRING "From: "
+                          FUNCTION TRIM(MS-Sender(COUNTER) TRAILING)
+                     DELIMITED BY SIZE INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+
+                   MOVE SPACES TO WS-Line
+                   STRING "Message: "
+                          FUNCTION TRIM(MS-Content(COUNTER) TRAILING)
+                     DELIMITED BY SIZE INTO WS-Line
+                   END-STRING
+                   PERFORM OUTPUT-LINE
+
+                   MOVE "---" TO WS-Line
+                   PERFORM OUTPUT-LINE
+               END-IF
+           END-PERFORM
+
+           *> If no messages found, inform the user
+           IF WS-My-App-Count = 0
+               MOVE "You have no messages at this time." TO WS-Line
+               PERFORM OUTPUT-LINE
+           END-IF
+
+           MOVE "---------------------" TO WS-Line
+           PERFORM OUTPUT-LINE.
