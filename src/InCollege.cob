@@ -539,14 +539,30 @@
            END-PERFORM
            CLOSE JobsFile.
 
+       DISPLAY-WELCOME-LOGO.
+           MOVE "*****************************************************************************" TO WS-Line.
+           PERFORM OUTPUT-LINE.
+           MOVE "  IIIIII            CCCCC    OOOO    LL      LL      EEEEE   GGGG    EEEEE " TO WS-Line.
+           PERFORM OUTPUT-LINE.
+           MOVE "    II   nn nnn     CC      OO  OO   LL      LL      EE      GG      EE    " TO WS-Line.
+           PERFORM OUTPUT-LINE.
+           MOVE "    II   nnn  nn    CC      OO  OO   LL      LL      EEEE    GG GGG  EEEE  " TO WS-Line.
+           PERFORM OUTPUT-LINE.
+           MOVE "    II   nn   nn    CC      OO  OO   LL      LL      EE      GG  GG  EE    " TO WS-Line.
+           PERFORM OUTPUT-LINE.
+           MOVE "  IIIIII nn   nn    CCCCC    OOOO    LLLLLLL LLLLLLL EEEEE   GGGGGG  EEEEE " TO WS-Line.
+           PERFORM OUTPUT-LINE.
+           MOVE "*****************************************************************************" TO WS-Line.
+           PERFORM OUTPUT-LINE.
 
            MAIN-MENU.
                PERFORM UNTIL EOF-Input
                        OR InputRecord = "Create New Account"
                        OR InputRecord = "Log In"
                    *> Display menu header and options
-                   MOVE "Welcome to InCollege!" TO WS-Line
-                   PERFORM OUTPUT-LINE
+
+                   PERFORM DISPLAY-WELCOME-LOGO
+                   
                    MOVE "1. Log In" TO WS-Line
                    PERFORM OUTPUT-LINE
                    MOVE "2. Create New Account" TO WS-Line

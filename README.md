@@ -1,6 +1,6 @@
 # In-College
 
-A COBOL-based program designed to simulate and manage an "In-College" system. It allows users to create accounts, log in, and perform various operations.  
+A COBOL-based program designed to simulate and manage an "In-College" system. It allows users to create accounts, log in, and perform various operations.
 You can **run it locally**, **open it as a container in VS Code**, **or run it directly with Docker** as-is.
 
 ---
@@ -11,6 +11,9 @@ You can **run it locally**, **open it as a container in VS Code**, **or run it d
 - Persistent account storage using text files
 - Menu-driven interface for navigating different options
 - Example input/output files included for testing
+- Sending, accepting and rejecting Connections
+- Posting, viewing and applying for jobs
+- Sending, viewing and receiving messages from  existing connections
 
 ---
 
@@ -26,6 +29,11 @@ in-college/
 ├── InCollege-Output.txt # Example output file
 ├── InCollege-Users.txt  # Stores created accounts
 ├── InCollege-Profiles.txt # Stores user profiles
+├── InCollege-ActiveConns.txt  # Stores active connections
+├── InCollege-Applications.txt # Stores job applications
+├── InCollege-Connections.txt  # Stores pending connections
+├── InCollege-Jobs.txt # Stores job postings
+├── InCollege-Messages.txt # Stores sent messages
 └── README.md            # Project documentation
 ```
 
@@ -103,7 +111,7 @@ This repository includes a `Dockerfile` so you can run the program as-is without
 ### **2. Running in VS Code DevContainer**
 
 1. Open the project in **VS Code**.
-2. When prompted, **Reopen in Container**.  
+2. When prompted, **Reopen in Container**.
    Alternatively, use:
    ```
    Ctrl + Shift + P → Remote-Containers: Reopen in Container
@@ -132,11 +140,11 @@ This repository includes a `Dockerfile` so you can run the program as-is without
 
 ## Troubleshooting
 
-- **Permission Denied**  
+- **Permission Denied**
   Ensure your compiled binary is executable:
   ```bash
   chmod +x InCollege
   ```
 
-- **Docker Not Running**  
+- **Docker Not Running**
   Start Docker Desktop or your Docker daemon before using the VS Code devcontainer.
