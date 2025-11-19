@@ -1,9 +1,36 @@
+Create New Account
+bob
+Password3!
 Log In
-steve
-Password1!
+bob
+Password3!
+Create/Edit My Profile
+Bob
+Smith
+Georgia Tech
+Mechanical Engineering
+2025
+Engineering enthusiast
+N
+N
+Search for a job
+1. Post a Job/Internship
+Junior Data Analyst
+1+ years experience working with a team.
+Oracle
+Miami, Fl
+$100,000
+2. Browse Jobs/Internships
+1
+Apply for this Job
+0
+3. View My Applications
+4. Back to Main Menu
+Search for User
+steve example
+Send Connection Request
+View My Network
 Messages
-Vi
-View My Messages
-View My Messages
-View My Messages
-View My Messages
+Send a New Message
+steve
+This message 
