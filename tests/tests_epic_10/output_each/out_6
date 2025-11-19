@@ -1,0 +1,57 @@
+*****************************************************************************
+  IIIIII            CCCCC    OOOO    LL      LL      EEEEE   GGGG    EEEEE
+    II   nn nnn     CC      OO  OO   LL      LL      EE      GG      EE
+    II   nnn  nn    CC      OO  OO   LL      LL      EEEE    GG GGG  EEEE
+    II   nn   nn    CC      OO  OO   LL      LL      EE      GG  GG  EE
+  IIIIII nn   nn    CCCCC    OOOO    LLLLLLL LLLLLLL EEEEE   GGGGGG  EEEEE
+*****************************************************************************
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, bob!
+0. Create/Edit My Profile
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+6. Find someone you know
+7. Search for a job
+8. Messages
+Enter your choice:
+--- Pending Connection Requests ---
+Request from: steve
+1. Accept
+2. Reject
+Enter your choice for steve:
+Connection request from steve accepted!
+Request from: tim
+1. Accept
+2. Reject
+Enter your choice for tim:
+Connection request from tim rejected.
+-----------------------------------
+0. Create/Edit My Profile
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+6. Find someone you know
+7. Search for a job
+8. Messages
+Enter your choice:
+Invalid choice. Please try again.
+0. Create/Edit My Profile
+1. View My Profile
+2. Search for User
+3. Learn a New Skill
+4. View My Pending Connection Requests
+5. View My Network
+6. Find someone you know
+7. Search for a job
+8. Messages
+Enter your choice:

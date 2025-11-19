@@ -18,3 +18,7 @@ Michael42           Sophie19            This is the positive test case. All feat
 Sophie19            Michael42           This is a positive test case where I will try sending a message twice.
 Sophie19            Michael42           This is the second message.
 Michael42           Sophie19            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin posuere, nisl vel interdum luctus, sapien justo faucibus arcu, at tincidunt nunc tortor vitae odio. Curabitur vitae lacus quis nisl hendr
+bob                 steve               Hello                                                                                                                                                                                                   2025-11-19 03:13:07
+bob                 steve               Hello again                                                                                                                                                                                             2025-11-19 03:13:07
+bob                 steve               Hello                                                                                                                                                                                                   2025-11-19 03:14:22
+bob                 steve               Hello again                                                                                                                                                                                             2025-11-19 03:14:22

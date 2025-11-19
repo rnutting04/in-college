@@ -762,6 +762,8 @@
            PERFORM OUTPUT-LINE
 
            PERFORM UNTIL EOF-Input
+               MOVE "0. Create/Edit My Profile" TO WS-Line
+               PERFORM OUTPUT-LINE
                MOVE "1. View My Profile" TO WS-Line
                PERFORM OUTPUT-LINE
                MOVE "2. Search for User" TO WS-Line
